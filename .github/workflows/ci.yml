@@ -49,6 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # test_update.py checks out v0.1.0 via copier
 
       - uses: astral-sh/setup-uv@v7
         with:
