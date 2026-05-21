@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/niklastypes/kindling/compare/v0.2.0...v0.3.0) (2026-05-21)
+
+
+### Features
+
+* add AGENTS.md template ([56fc691](https://github.com/niklastypes/kindling/commit/56fc69110cd5ecfd9ff3aa5e688e2ecaeabf31e8))
+* add github_username question and project URLs to pyproject.toml ([2140798](https://github.com/niklastypes/kindling/commit/2140798156dca77f9574c617aff0870ac33f3b1d))
+* add README template ([571b205](https://github.com/niklastypes/kindling/commit/571b2054c16da9302a619196e97a4ecd2ea8db47))
+* add template verification tests ([ad88deb](https://github.com/niklastypes/kindling/commit/ad88debe08804c3202a67c94f610b03d108d7360))
+* auto git init and first commit on project generation ([64e2e6d](https://github.com/niklastypes/kindling/commit/64e2e6d0869a77bd8183f2e2cfe281329bfe31eb))
+* restore readme field in pyproject.toml now that README template exists ([97d3216](https://github.com/niklastypes/kindling/commit/97d32164bb06df4613b7d05f4fb8adffe3c8269a))
+
+
+### Documentation
+
+* update README and CLAUDE.md to reflect current state ([d46aa52](https://github.com/niklastypes/kindling/commit/d46aa524c44bfd476af5d418852beff5a5fbcc61))
+
 ## [0.2.0](https://github.com/niklastypes/kindling/compare/v0.1.0...v0.2.0) (2026-05-21)
 
 
