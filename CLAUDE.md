@@ -22,13 +22,15 @@ Also serves as the **single source of truth for Python project standards**: tool
 | `AGENTS.md` | Python-specific standards quick reference |
 | `README.md` | Project README with setup instructions |
 | `renovate.json` | Automated dependency updates |
-| `release-please-config.json` | Pre-1.0 safe version bumping |
+| `release-please-config.json` | Automated versioning (feat bumps minor pre-1.0) |
 | `.pre-commit-config.yaml` | conventional commits, ruff, ty |
 | `.github/workflows/ci.yml` | lint, format, type check, test |
 | `.github/workflows/release.yml` | release-please |
 | `src/{{package_name}}/__init__.py` | Package init with version |
 | `tests/__init__.py` | Empty |
+| `tests/test_{{package_name}}.py` | Smoke test (confirms package imports and has a version) |
 | `.copier-answers.yml` | Tracks template version for `copier update` |
+| `.release-please-manifest.json` | Release-please version anchor (starts at 0.1.0) |
 
 What is deliberately NOT generated: logging config, docs framework, Docker, FastAPI/CLI scaffolding, test fixtures.
 
@@ -51,9 +53,10 @@ What is deliberately NOT generated: logging config, docs framework, Docker, Fast
 
 | Variable | Type | Default | Notes |
 |---|---|---|---|
-| `project_name` | str | (required) | Lowercase with hyphens. Used for pyproject.toml name, directory. |
-| `project_description` | str | "A Python project" | One-liner for pyproject.toml and README |
-| `author_name` | str | "Niklas Baier" | For pyproject.toml and LICENSE |
+| `project_name` | str | (required) | Kebab-case. Used for pyproject.toml name, directory. |
+| `project_description` | str | "A Python project, kindled with Kindling" | One-liner for pyproject.toml and README |
+| `author_name` | str | (required) | For pyproject.toml and LICENSE |
+| `github_username` | str | (required) | GitHub username or org, for project URLs |
 | `python_version` | str | "3.13" | Choices: 3.12, 3.13 |
 | `package_name` | str | (computed) | `project_name` with hyphens replaced by underscores. Not shown to user. |
 
@@ -83,7 +86,7 @@ kindling/
 │   ├── release-please-config.json.jinja
 │   ├── renovate.json
 │   ├── src/{{package_name}}/
-│   │   └── __init__.py
+│   │   └── __init__.py.jinja
 │   └── tests/
 │       └── __init__.py
 └── tests/                              # Tests for the template itself
@@ -111,10 +114,11 @@ Tags are required for `copier update` to work. Every stage gets one.
 
 ```bash
 # Generate a test project
-copier copy . /tmp/test-project \
+copier copy . /tmp/test-project --trust \
   --data project_name=my-project \
   --data project_description="A test project" \
   --data author_name="Niklas Baier" \
+  --data github_username="niklastypes" \
   --data python_version="3.13"
 
 # Run the template verification tests
@@ -123,7 +127,3 @@ uv run pytest tests/ -v
 # Check for unrendered Jinja artifacts in a generated project
 grep -r "{{" /tmp/test-project --include="*.py" --include="*.toml" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.md"
 ```
-
-## Current Status
-
-Repo initialized. No template files created yet. See plan.md for the full step-by-step implementation.

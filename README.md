@@ -20,20 +20,21 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 
 ```bash
 # Kindle a new project
-copier copy gh:niklastypes/kindling my-project
+copier copy gh:niklastypes/kindling my-project --trust
 
 # Feed the fire: pull template improvements into an existing project
 cd my-project
-copier update
+copier update --trust
 ```
 
-You'll be asked for: project name, description, author, Python version.
+You'll be asked for: project name, description, author, GitHub username, Python version.
 
 ### After Generation
 
+The first commit is created automatically. Just run:
+
 ```bash
 cd my-project
-git init
 uv sync --all-extras
 uv run pre-commit install
 ```
