@@ -36,6 +36,11 @@ python_version:
     - "3.12"
   default: "3.13"
 
+# --- Tasks ---
+
+_tasks:
+  - "[ ! -d .git ] && git init && git add . && git commit -m 'feat: initial commit kindled with 🪵 Kindling' || true"
+
 # --- Computed (not shown to user) ---
 
 package_name:
