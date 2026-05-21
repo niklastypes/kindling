@@ -1,0 +1,44 @@
+_min_copier_version: "9.0"
+_subdirectory: project
+_templates_suffix: .jinja
+_exclude:
+  - .git
+  - __pycache__
+  - .ruff_cache
+  - .ty
+
+_skip_if_exists:
+  - AGENTS.md
+  - README.md
+
+# --- Questions ---
+
+project_name:
+  type: str
+  help: "Project name (kebab-case, e.g. my-project)"
+  validator: "{% if not project_name %}Project name is required{% endif %}"
+
+project_description:
+  type: str
+  help: "One-line project description"
+  default: "A Python project, kindled with Kindling"
+
+author_name:
+  type: str
+  help: "Author name for pyproject.toml and LICENSE"
+  default: "Niklas Baier"
+
+python_version:
+  type: str
+  help: "Python version"
+  choices:
+    - "3.13"
+    - "3.12"
+  default: "3.13"
+
+# --- Computed (not shown to user) ---
+
+package_name:
+  type: str
+  default: "{{ project_name | replace('-', '_') }}"
+  when: false
