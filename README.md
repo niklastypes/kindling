@@ -29,6 +29,19 @@ copier update
 
 You'll be asked for: project name, description, author, Python version.
 
+### After Generation
+
+```bash
+cd my-project
+git init
+uv sync --all-extras
+uv run pre-commit install
+```
+
+Then do these one-time steps on GitHub:
+
+1. Enable release-please: go to **Settings → Actions → General → Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**
+
 ## One-time Setup
 
 ### Renovate
