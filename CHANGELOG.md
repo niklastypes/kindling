@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/niklastypes/kindling/compare/v0.3.0...v0.4.0) (2026-05-21)
+
+
+### Features
+
+* protect LICENSE and .gitignore from being overwritten on copier update ([2d6e0f0](https://github.com/niklastypes/kindling/commit/2d6e0f01f81a22ff17ca6a84c9ce1ff6741d83ff))
+
+
+### Documentation
+
+* refresh README and CLAUDE.md to reflect final state ([b1993fc](https://github.com/niklastypes/kindling/commit/b1993fce0478983bc748f8b8f541cb3dd8be9500))
+
 ## [0.3.0](https://github.com/niklastypes/kindling/compare/v0.2.0...v0.3.0) (2026-05-21)
 
 
