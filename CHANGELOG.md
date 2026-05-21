@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0](https://github.com/niklastypes/kindling/compare/v0.1.0...v0.2.0) (2026-05-21)
+
+
+### Features
+
+* add CI workflow template ([88e30ec](https://github.com/niklastypes/kindling/commit/88e30ecb94cb9daea01faa87ead1751f51147369))
+* add pre-commit config template ([54b4217](https://github.com/niklastypes/kindling/commit/54b421788ffba854a5a5dbad5635a00887f1050f))
+* add release workflow and release-please manifest templates ([289ee02](https://github.com/niklastypes/kindling/commit/289ee022845ccb7608292c24a4294e9d24b30346))
+* add smoke test template so CI always has at least one test ([9881944](https://github.com/niklastypes/kindling/commit/9881944cdb68ae5622ff52b00742ee6a891aabe7))
+
 ## [0.1.0](https://github.com/niklastypes/kindling/commits/v0.1.0) (2026-05-21)
 
 
