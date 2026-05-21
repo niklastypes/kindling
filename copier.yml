@@ -26,12 +26,12 @@ project_description:
 author_name:
   type: str
   help: "Author name for pyproject.toml and LICENSE"
-  default: "Niklas Baier"
+  validator: "{% if not author_name %}Author name is required{% endif %}"
 
 github_username:
   type: str
   help: "GitHub username or org (used for project URLs)"
-  default: "niklastypes"
+  validator: "{% if not github_username %}GitHub username is required{% endif %}"
 
 python_version:
   type: str
