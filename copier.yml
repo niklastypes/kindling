@@ -28,6 +28,11 @@ author_name:
   help: "Author name for pyproject.toml and LICENSE"
   default: "Niklas Baier"
 
+github_username:
+  type: str
+  help: "GitHub username or org (used for project URLs)"
+  default: "niklastypes"
+
 python_version:
   type: str
   help: "Python version"
