@@ -18,7 +18,7 @@ Also serves as the **single source of truth for Python project standards**: tool
 | `.python-version` | From copier question |
 | `.gitignore` | Standard Python ignores |
 | `.env.example` | Empty placeholder |
-| `LICENSE` | MIT, current year |
+| `LICENSE` | MIT |
 | `AGENTS.md` | Python-specific standards quick reference |
 | `README.md` | Project README with setup instructions |
 | `renovate.json` | Automated dependency updates |
@@ -66,39 +66,20 @@ What is deliberately NOT generated: logging config, docs framework, Docker, Fast
 
 ```
 kindling/
-├── copier.yml                          # Questions and copier config
-├── CLAUDE.md                           # This file
-├── README.md                           # Template repo README (not copied)
-├── plan.md                             # Implementation plan
-├── project/                            # Template root (_subdirectory in copier.yml)
-│   ├── .copier-answers.yml.jinja
-│   ├── .env.example
-│   ├── .gitignore
-│   ├── .python-version.jinja
-│   ├── .pre-commit-config.yaml
-│   ├── .github/workflows/
-│   │   ├── ci.yml.jinja
-│   │   └── release.yml.jinja
-│   ├── AGENTS.md.jinja
-│   ├── LICENSE.jinja
-│   ├── README.md.jinja
-│   ├── pyproject.toml.jinja
-│   ├── release-please-config.json.jinja
-│   ├── renovate.json
-│   ├── src/{{package_name}}/
-│   │   └── __init__.py.jinja
-│   └── tests/
-│       └── __init__.py
-└── tests/                              # Tests for the template itself
-    └── test_generate.py
+├── copier.yml          # Template config: questions, tasks, skip rules
+├── project/            # Template root — everything here is copied to generated projects
+└── tests/              # Tests for the template itself (test_generate.py, test_update.py)
 ```
+
+Other top-level files (`pyproject.toml`, `.github/workflows/`, `release-please-config.json`, `renovate.json`, `CHANGELOG.md`) are kindling's own infrastructure and are NOT copied to generated projects.
 
 ## Templating Rules
 
 - Files needing Jinja rendering get a `.jinja` suffix. Files without the suffix are copied verbatim.
-- GitHub Actions uses `${{ }}` which conflicts with Jinja's `{{ }}`. Wrap every `${{ }}` expression in `{% raw %}...{% endraw %}`.
-- `_skip_if_exists: [AGENTS.md, README.md]` prevents `copier update` from overwriting user-customized files.
+- GitHub Actions uses `${{ }}` which conflicts with Jinja's `{{ }}`. Wrap every `${{ }}` expression in `{% raw %}...{% endraw %}`. Plain `if:` conditions without `${{ }}` don't need wrapping.
+- `_skip_if_exists: [AGENTS.md, README.md, LICENSE, .gitignore]` prevents `copier update` from overwriting files users typically customize.
 - `_subdirectory: project` tells copier to use `project/` as the template root, not the repo root.
+- `_tasks` runs shell commands in the destination after generation. Currently used to auto-init git and create a conventional first commit. Requires `--trust` to run.
 
 ## Stages (Roadmap)
 
@@ -123,7 +104,4 @@ copier copy . /tmp/test-project --trust \
 
 # Run the template verification tests
 uv run pytest tests/ -v
-
-# Check for unrendered Jinja artifacts in a generated project
-grep -r "{{" /tmp/test-project --include="*.py" --include="*.toml" --include="*.yml" --include="*.yaml" --include="*.json" --include="*.md"
 ```

@@ -14,6 +14,7 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - **GitHub Actions** CI (lint, format, type check, test)
 - **release-please** for automated versioning and releases
 - **Renovate** for automated dependency updates
+- Auto `git init` and conventional first commit on generation
 - src-layout, MIT license, AGENTS.md with project standards
 
 ## Usage
