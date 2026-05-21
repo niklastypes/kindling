@@ -29,7 +29,18 @@ copier update
 
 You'll be asked for: project name, description, author, Python version.
 
+## One-time Setup
+
+### Renovate
+
+Kindled projects include a `renovate.json` for automated dependency updates. To activate it, install the Renovate GitHub App on your account once:
+
+1. Go to [github.com/apps/renovate](https://github.com/apps/renovate) and click **Install**
+2. Select your account, choose **Scan and Alert**, and grant access to repositories (all repos or selected)
+3. Done. Any repo with a `renovate.json` will automatically receive dependency update PRs.
+
 ## Requirements
 
 - [copier](https://copier.readthedocs.io/) (`uv tool install copier`)
 - [uv](https://docs.astral.sh/uv/) (for kindled projects)
+- [Renovate GitHub App](https://github.com/apps/renovate) installed on your GitHub account (one-time setup, see below)
