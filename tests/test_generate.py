@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import copier
@@ -50,8 +51,6 @@ def test_key_files_exist(generated: Path) -> None:
 
 
 def test_no_jinja_artifacts(generated: Path) -> None:
-    import re
-
     # Match {{ not preceded by $ (GitHub Actions uses ${{ }}, Jinja uses {{ }})
     jinja_var = re.compile(r"(?<!\$){{")
 
