@@ -18,7 +18,9 @@ GIT_ENV = {
 
 
 def _git(args: list[str], cwd: Path) -> None:
-    subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, env=GIT_ENV)
+    subprocess.run(
+        ["git", *args], cwd=cwd, check=True, capture_output=True, env=GIT_ENV
+    )
 
 
 def test_update_from_v0_1_0(tmp_path: Path) -> None:
