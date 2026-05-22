@@ -2,7 +2,7 @@
 
 Small, dry, catches quickly. A copier template for bootstrapping Python projects with clean defaults and consistent standards. **Kindling starts the fire, it doesn't become it.**
 
-Replaces the old [`instant-repo`](https://github.com/niklastypes/instant-repo) template (Poetry, mypy, commitizen, MkDocs, all superseded). Archived.
+Replaces the old `instant-repo` template (Poetry, mypy, commitizen, MkDocs, all superseded). Archived.
 
 ## Goal
 
@@ -23,10 +23,12 @@ Also serves as the **single source of truth for Python project standards**: tool
 | `README.md` | Project README with setup instructions |
 | `renovate.json` | Automated dependency updates |
 | `release-please-config.json` | Automated versioning (feat bumps minor pre-1.0) |
-| `.pre-commit-config.yaml` | conventional commits, ruff, ty |
+| `.gitattributes` | Line ending normalization (`* text=auto`) |
+| `.pre-commit-config.yaml` | conventional commits, ruff (pre-commit), ty (pre-push) |
 | `.github/workflows/ci.yml` | lint, format, type check, test |
 | `.github/workflows/release.yml` | release-please |
 | `src/{{package_name}}/__init__.py` | Package init with version |
+| `src/{{package_name}}/py.typed` | PEP 561 marker for downstream type checkers |
 | `tests/__init__.py` | Empty |
 | `tests/test_{{package_name}}.py` | Smoke test (confirms package imports and has a version) |
 | `.copier-answers.yml` | Tracks template version for `copier update` |
@@ -46,14 +48,14 @@ What is deliberately NOT generated: logging config, docs framework, Docker, Fast
 | Testing | pytest | Industry standard |
 | Versioning | release-please | Automated from conventional commits |
 | Dependency updates | Renovate | Automated PRs |
-| Pre-commit hooks | conventional-pre-commit, ruff, ty | Catch issues before CI |
+| Pre-commit hooks | conventional-pre-commit, ruff, ty | Catch issues before CI. ty runs on pre-push to keep commits fast |
 | Layout | src-layout | Clean separation of source and tests |
 
 ## Copier Questions
 
 | Variable | Type | Default | Notes |
 |---|---|---|---|
-| `project_name` | str | (required) | Kebab-case. Used for pyproject.toml name, directory. |
+| `project_name` | str | (required) | Kebab-case, validated (`^[a-z][a-z0-9]*(-[a-z0-9]+)*$`). Used for pyproject.toml name, directory. |
 | `project_description` | str | "A Python project, kindled with Kindling" | One-liner for pyproject.toml and README |
 | `author_name` | str | (required) | For pyproject.toml and LICENSE |
 | `github_username` | str | (required) | GitHub username or org, for project URLs |
@@ -98,8 +100,8 @@ Tags are required for `copier update` to work. Every stage gets one.
 copier copy . /tmp/test-project --trust \
   --data project_name=my-project \
   --data project_description="A test project" \
-  --data author_name="Niklas Baier" \
-  --data github_username="niklastypes" \
+  --data author_name="Your Name" \
+  --data github_username="your-username" \
   --data python_version="3.13"
 
 # Run the template verification tests
