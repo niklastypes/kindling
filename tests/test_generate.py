@@ -46,6 +46,8 @@ def test_key_files_exist(generated: Path) -> None:
     assert (generated / ".github" / "workflows" / "ci.yml").exists()
     assert (generated / ".github" / "workflows" / "release.yml").exists()
     assert (generated / "src" / "test_project" / "__init__.py").exists()
+    assert (generated / "src" / "test_project" / "py.typed").exists()
+    assert (generated / ".gitattributes").exists()
     assert (generated / "tests" / "__init__.py").exists()
     assert (generated / "tests" / "test_test_project.py").exists()
 
