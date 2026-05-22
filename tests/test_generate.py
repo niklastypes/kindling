@@ -86,3 +86,37 @@ def test_hyphenated_name_uses_underscores(tmp_path: Path) -> None:
     content = (project / "pyproject.toml").read_text()
     assert 'name = "my-cool-project"' in content
     assert 'packages = ["src/my_cool_project"]' in content
+
+
+KEBAB_CASE_RE = re.compile(r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "My-Project",
+        "my project",
+        "my_project",
+        "-my-project",
+        "my-project-",
+        "my--project",
+        "123-project",
+        "my@project",
+    ],
+)
+def test_project_name_validator_rejects_invalid(name: str) -> None:
+    assert not KEBAB_CASE_RE.match(name), f"Expected {name!r} to be rejected"
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "a",
+        "a1",
+        "my-project",
+        "my-cool-project",
+        "foo123",
+    ],
+)
+def test_project_name_validator_accepts_valid(name: str) -> None:
+    assert KEBAB_CASE_RE.match(name), f"Expected {name!r} to be accepted"

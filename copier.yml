@@ -17,8 +17,13 @@ _skip_if_exists:
 
 project_name:
   type: str
-  help: "Project name (kebab-case, e.g. my-project)"
-  validator: "{% if not project_name %}Project name is required{% endif %}"
+  help: "Project name in kebab-case (lowercase letters, digits, single hyphens, e.g. my-project)"
+  validator: >-
+    {% if not project_name %}
+    Project name is required.
+    {% elif not project_name | regex_search('^[a-z][a-z0-9]*(-[a-z0-9]+)*$') %}
+    Project name must be kebab-case: lowercase letters, digits, and single hyphens (e.g. my-project).
+    {% endif %}
 
 project_description:
   type: str
