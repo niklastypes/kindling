@@ -14,7 +14,7 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - **GitHub Actions** CI (lint, format, type check, test)
 - **release-please** for automated versioning and releases
 - **Renovate** for automated dependency updates
-- Auto `git init` and conventional first commit on generation
+- Auto `git init`, conventional first commit, and `v0.1.0` tag on generation
 - src-layout, MIT license, AGENTS.md with project standards
 
 ## Usage
@@ -32,7 +32,9 @@ You'll be asked for: project name, description, author, GitHub username, Python 
 
 ### After Generation
 
-The first commit is created automatically. Just run:
+The first commit is created automatically and tagged `v0.1.0`.
+
+Local setup:
 
 ```bash
 cd my-project
@@ -40,9 +42,15 @@ uv sync --all-extras
 uv run pre-commit install
 ```
 
-Then do these one-time steps on GitHub:
+Push to GitHub (recommended right away, so the `v0.1.0` tag has a home and release-please has an anchor):
 
-1. Enable release-please: go to **Settings → Actions → General → Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**
+```bash
+gh repo create --public --source=. --remote=origin
+git push -u origin main --tags
+gh release create v0.1.0 --generate-notes
+```
+
+Then enable release-please on GitHub: **Settings → Actions → General → Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**.
 
 ## One-time Setup
 

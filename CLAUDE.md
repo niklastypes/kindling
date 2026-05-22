@@ -44,7 +44,7 @@ copier copy . /tmp/test-project --trust \
 - GitHub Actions `${{ }}` conflicts with Jinja `{{ }}`. Wrap every `${{ }}` expression in `{% raw %}...{% endraw %}`. Plain `if:` conditions without `${{ }}` don't need wrapping.
 - `_skip_if_exists` in copier.yml prevents `copier update` from overwriting files users typically customize (AGENTS.md, README.md, LICENSE, .gitignore).
 - `_subdirectory: project` tells copier to use `project/` as the template root.
-- `_tasks` runs post-generation shell commands (git init + first commit). Requires `--trust`.
+- `_tasks` runs post-generation shell commands (git init + first commit + `v0.1.0` tag). Requires `--trust`. The tag anchors release-please's manifest entry so the git tag history matches `version = "0.1.0"` from the start.
 
 ## Copier Validators
 

@@ -51,7 +51,7 @@ python_version:
 # --- Tasks ---
 
 _tasks:
-  - "[ ! -d .git ] && git init && git add . && git commit -m 'feat: initial commit kindled with 🪵 Kindling' || true"
+  - "[ ! -d .git ] && git init && (git config user.email >/dev/null 2>&1 || git config user.email 'kindled@local') && (git config user.name >/dev/null 2>&1 || git config user.name 'Kindling') && git add . && git commit -m 'feat: initial commit kindled with 🪵 Kindling' && git tag v0.1.0 || true"
 
 # --- Computed (not shown to user) ---
 

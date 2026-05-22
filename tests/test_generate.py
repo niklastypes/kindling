@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import copier
@@ -72,6 +73,17 @@ def test_pyproject_rendered_correctly(generated: Path) -> None:
     assert 'packages = ["src/test_project"]' in content
     assert "https://github.com/test-user/test-project" in content
     assert "{{" not in content
+
+
+def test_initial_commit_is_tagged_v0_1_0(generated: Path) -> None:
+    result = subprocess.run(
+        ["git", "tag", "--list"],
+        cwd=generated,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "v0.1.0" in result.stdout.split()
 
 
 def test_hyphenated_name_uses_underscores(tmp_path: Path) -> None:
