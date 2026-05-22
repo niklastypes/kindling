@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.5.0](https://github.com/niklastypes/kindling/compare/v0.4.0...v0.5.0) (2026-05-22)
+
+
+### Features
+
+* add check-ast and pre-commit-update hooks to template ([75618b5](https://github.com/niklastypes/kindling/commit/75618b51fcebb2026020059a369530510870d34e))
+* add kebab-case validation to project_name ([6e91ec6](https://github.com/niklastypes/kindling/commit/6e91ec6a201f0401c706c0a5476083b4722cc81a))
+
+
+### Documentation
+
+* add check-ast and pre-commit-update to docs ([f2eb6da](https://github.com/niklastypes/kindling/commit/f2eb6da06b4f90ea006f05a71896248014790bc4))
+* rewrite CLAUDE.md as operational reference ([2b4d261](https://github.com/niklastypes/kindling/commit/2b4d2619730b7ccfde7eb92e40bc997046c23e4a))
+* update CLAUDE.md and README.md for template improvements ([aad29f6](https://github.com/niklastypes/kindling/commit/aad29f64fbf0daa1092d289495ca69f047281798))
+
 ## [0.4.0](https://github.com/niklastypes/kindling/compare/v0.3.0...v0.4.0) (2026-05-21)
 
 
