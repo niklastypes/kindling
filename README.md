@@ -10,7 +10,7 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - **ruff** for formatting and linting
 - **ty** for type checking
 - **pytest** for testing
-- **pre-commit** hooks (conventional commits, ruff on commit, ty on push)
+- **pre-commit** hooks (conventional commits, ruff + syntax check on commit, ty + hook auto-update on push)
 - **GitHub Actions** CI (lint, format, type check, test)
 - **release-please** for automated versioning and releases
 - **Renovate** for automated dependency updates

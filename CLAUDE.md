@@ -24,7 +24,7 @@ Also serves as the **single source of truth for Python project standards**: tool
 | `renovate.json` | Automated dependency updates |
 | `release-please-config.json` | Automated versioning (feat bumps minor pre-1.0) |
 | `.gitattributes` | Line ending normalization (`* text=auto`) |
-| `.pre-commit-config.yaml` | conventional commits, ruff (pre-commit), ty (pre-push) |
+| `.pre-commit-config.yaml` | conventional commits, ruff + check-ast (pre-commit), ty + pre-commit-update (pre-push) |
 | `.github/workflows/ci.yml` | lint, format, type check, test |
 | `.github/workflows/release.yml` | release-please |
 | `src/{{package_name}}/__init__.py` | Package init with version |
@@ -48,7 +48,7 @@ What is deliberately NOT generated: logging config, docs framework, Docker, Fast
 | Testing | pytest | Industry standard |
 | Versioning | release-please | Automated from conventional commits |
 | Dependency updates | Renovate | Automated PRs |
-| Pre-commit hooks | conventional-pre-commit, ruff, ty | Catch issues before CI. ty runs on pre-push to keep commits fast |
+| Pre-commit hooks | conventional-pre-commit, ruff, check-ast, ty, pre-commit-update | Catch issues before CI. ty and pre-commit-update run on pre-push to keep commits fast |
 | Layout | src-layout | Clean separation of source and tests |
 
 ## Copier Questions
