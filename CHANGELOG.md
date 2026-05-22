@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/niklastypes/kindling/compare/v0.5.0...v0.5.1) (2026-05-22)
+
+
+### Bug Fixes
+
+* tag scaffold commit as v0.1.0 and document GitHub publish flow ([e7e7c78](https://github.com/niklastypes/kindling/commit/e7e7c7816a24015b640c6f876a90f4e7d759ff46)), closes [#5](https://github.com/niklastypes/kindling/issues/5)
+
 ## [0.5.0](https://github.com/niklastypes/kindling/compare/v0.4.0...v0.5.0) (2026-05-22)
 
 
