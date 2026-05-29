@@ -136,9 +136,9 @@ One container serves both API and frontend. Simplest to deploy:
 FROM python:3.13-dev AS api
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 WORKDIR /app
-COPY apps/<app>/api/pyproject.toml apps/<app>/api/uv.lock ./
+COPY api/pyproject.toml api/uv.lock ./
 RUN uv sync --frozen --no-install-project
-COPY apps/<app>/api/ .
+COPY api/ .
 RUN uv sync --frozen
 
 # Stage 2: Frontend build
@@ -146,9 +146,9 @@ FROM node:22-dev AS ui
 RUN corepack enable
 WORKDIR /workspace
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY apps/<app>/ui/ apps/<app>/ui/
+COPY ui/ ui/
 RUN pnpm install --frozen-lockfile
-RUN pnpm exec nx run <app>-ui:build --outDir /app/dist
+RUN pnpm exec nx run ui:build --outDir /app/dist
 
 # Stage 3: Runtime
 FROM python:3.13
@@ -238,19 +238,219 @@ Keep Kindling's `release.yml` if you want release-please. It works alongside the
 
 ---
 
+## Testing strategy
+
+A full-stack app needs tests at multiple levels. The goal is fast feedback for most things, with slower, broader tests reserved for what actually needs them.
+
+### Test pyramid
+
+| Level | Tool | What it covers | Speed |
+|---|---|---|---|
+| **Unit** | pytest, Vitest | Pure functions, isolated logic, edge cases | Fast (ms) |
+| **Integration** | pytest (with real DB/services) | Component interactions, database queries, service layers | Medium (seconds) |
+| **API-level BDD** | pytest-bdd | User-facing behavior through the API contract | Medium (seconds) |
+| **Contract** | openapi-typescript, pytest | Frontend/backend type agreement via OpenAPI spec | Fast (ms) |
+| **E2E** | Playwright | Critical user journeys through the browser | Slow (seconds to minutes) |
+| **Smoke** | pytest or curl in CI | Post-deploy sanity check (is the app alive and functional?) | Fast (ms) |
+
+Most of your tests should live in the bottom two rows. The top rows catch the things that slip through.
+
+### Unit tests
+
+Already covered in the full-stack guide. Backend unit tests live in `api/tests/`, frontend unit tests run via Vitest. Use these for pure logic, edge cases, and anything that doesn't need external dependencies.
+
+### Integration tests
+
+Test how components work together with real dependencies (database, caches, external service clients). These catch the bugs that unit tests with mocks miss: wrong SQL, transaction handling, serialization mismatches.
+
+```python
+# api/tests/integration/conftest.py
+import pytest_asyncio
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+
+@pytest_asyncio.fixture()
+async def db_session():
+    engine = create_async_engine("postgresql+asyncpg://test:test@localhost:5432/test")
+    factory = async_sessionmaker(engine, expire_on_commit=False)
+    async with factory() as session:
+        yield session
+        await session.rollback()
+```
+
+```python
+# api/tests/integration/test_items_repository.py
+import pytest
+
+@pytest.mark.asyncio
+async def test_create_and_retrieve_item(db_session):
+    repo = ItemRepository(db_session)
+    created = await repo.create(name="Widget")
+    retrieved = await repo.get(created.id)
+    assert retrieved.name == "Widget"
+```
+
+Use a pytest marker to separate integration tests from unit tests so you can run them independently:
+
+```toml
+# pyproject.toml
+[tool.pytest.ini_options]
+markers = ["integration: tests requiring external services"]
+```
+
+```bash
+uv run pytest -m "not integration"    # Fast: unit tests only
+uv run pytest -m integration          # Slower: integration tests (needs DB running)
+uv run pytest                         # Everything
+```
+
+### BDD at the API layer
+
+This is the sweet spot for behavior tests. Gherkin feature files describe what the system does from a user's perspective, and step definitions exercise the FastAPI endpoints through the test client. No browser, no UI coupling, just the business behavior.
+
+```
+api/tests/
+├── features/
+│   └── items.feature
+├── step_defs/
+│   └── test_items.py
+├── integration/
+│   └── ...
+├── conftest.py
+└── test_smoke.py
+```
+
+```gherkin
+# api/tests/features/items.feature
+Feature: Item management
+
+  Scenario: Create and list items
+    Given an empty item store
+    When I create an item named "Widget"
+    Then the items list contains "Widget"
+```
+
+```python
+# api/tests/step_defs/test_items.py
+from pytest_bdd import scenario, given, when, then
+
+@scenario("../features/items.feature", "Create and list items")
+def test_create_and_list():
+    pass
+
+@given("an empty item store", target_fixture="context")
+def empty_store():
+    return {}
+
+@when("I create an item named \"Widget\"", target_fixture="context")
+def create_item(client, context):
+    response = client.post("/api/items", json={"name": "Widget"})
+    assert response.status_code == 201
+    context["created"] = response.json()
+    return context
+
+@then("the items list contains \"Widget\"")
+def check_list(client, context):
+    response = client.get("/api/items")
+    names = [item["name"] for item in response.json()]
+    assert "Widget" in names
+```
+
+Write feature files in business language, not implementation details. "When I create an item" is good. "When I POST to /api/items with JSON body" is not.
+
+Add `pytest-bdd` to Kindling's dev dependencies:
+
+```toml
+[dependency-groups]
+dev = [
+    # ... existing
+    "pytest-bdd>=8.0.0",
+]
+```
+
+### Contract tests
+
+Frontend and backend can drift apart silently. Contract tests catch this at build time.
+
+FastAPI generates an OpenAPI spec for free at `/openapi.json`. Use this as the single source of truth:
+
+1. **Backend side:** add a pytest fixture that exports the spec to a known location during CI:
+
+```python
+# api/tests/test_openapi.py
+import json
+from pathlib import Path
+
+def test_export_openapi_spec(app):
+    spec = app.openapi()
+    Path("openapi.json").write_text(json.dumps(spec, indent=2))
+```
+
+2. **Frontend side:** use `openapi-typescript` to generate types from that spec and check them into the repo (or generate on CI). If the spec changes in a way that breaks the frontend's assumptions, the TypeScript compiler catches it.
+
+```bash
+# In CI or as a dev script
+npx openapi-typescript api/openapi.json -o ui/src/shared/api/schema.d.ts
+```
+
+This replaces the manual `RawItem` / `mapItem` pattern from the full-stack guide with compile-time safety. Start with manual mapping, graduate to contract tests when the API surface grows.
+
+### E2E tests
+
+Playwright tests in `ui-e2e/` cover critical user journeys through the browser. These are expensive to write and maintain, so be selective:
+
+- Login/signup flow
+- The primary happy path (the one thing your app absolutely must do)
+- Payment or other irreversible actions
+
+Don't duplicate what BDD and integration tests already cover. If a scenario can be tested at the API level, it should be.
+
+### Smoke tests
+
+A small suite that runs post-deploy to verify the deployed app is actually working. These are not comprehensive, just "is it alive and minimally functional?"
+
+```python
+# api/tests/smoke/test_smoke.py
+import httpx
+import os
+
+BASE_URL = os.environ["SMOKE_TEST_URL"]  # e.g. https://my-app.example.com
+
+def test_health():
+    response = httpx.get(f"{BASE_URL}/api/health")
+    assert response.status_code == 200
+
+def test_frontend_loads():
+    response = httpx.get(BASE_URL)
+    assert response.status_code == 200
+    assert "index.html" in response.text or "<div id=" in response.text
+```
+
+Run these in CI after deployment, or as a scheduled job. They should complete in seconds.
+
+### Where tests run
+
+| Test type | When | Runner |
+|---|---|---|
+| Unit + Integration + BDD | Every PR, on affected projects | `npx nx affected -t test` |
+| Contract | Every PR (spec export + type generation) | CI pipeline |
+| E2E | Every PR (or nightly if slow) | `npx nx run ui-e2e:e2e` |
+| Smoke | Post-deploy | Separate CI job or scheduled trigger |
+
+---
+
 ## Database (if needed)
 
 ### Local dev with Docker Compose
 
 ```yaml
-# apps/<app>/docker-compose.yml
+# docker-compose.yml
 services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_DB: <app>
-      POSTGRES_USER: <app>
-      POSTGRES_PASSWORD: <app>
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
     ports:
       - "5432:5432"
     volumes:
@@ -261,7 +461,7 @@ volumes:
 ```
 
 ```bash
-cd apps/<app> && docker compose up -d
+docker compose up -d
 ```
 
 ### SQLAlchemy async pattern
@@ -338,7 +538,7 @@ Before deploying for the first time:
 - [ ] `.env.example` documents all required variables
 - [ ] No secrets in git (`.env` is gitignored)
 - [ ] `CORS_ALLOWED_ORIGINS` is set correctly for the deploy environment
-- [ ] Docker build succeeds locally: `docker build -t <app> .`
+- [ ] Docker build succeeds locally: `docker build -t <project> .`
 - [ ] Container starts and serves both API and frontend
 - [ ] Frontend routes work (SPA catch-all returns `index.html`)
 - [ ] CI passes: lint, typecheck, test on both sides

@@ -677,7 +677,7 @@ export function listItems(): Promise<Item[]> {
 }
 ```
 
-Future improvement: FastAPI generates OpenAPI specs for free. Add `openapi-typescript` later for compile-time contract safety.
+Once the API surface grows, replace manual mapping with contract tests. See the testing strategy section in [productionalize.md](productionalize.md) for details on using FastAPI's OpenAPI spec with `openapi-typescript` for compile-time safety.
 
 ---
 
