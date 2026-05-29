@@ -51,6 +51,8 @@ def test_key_files_exist(generated: Path) -> None:
     assert (generated / ".gitattributes").exists()
     assert (generated / "tests" / "__init__.py").exists()
     assert (generated / "tests" / "test_test_project.py").exists()
+    assert (generated / "docs" / "full-stack.md").exists()
+    assert (generated / "docs" / "productionalize.md").exists()
 
 
 def test_no_jinja_artifacts(generated: Path) -> None:

@@ -47,4 +47,12 @@
 ```
 src/{{package_name}}/
 tests/
+docs/                          # Guides for evolving the project
 ```
+
+## Growing Beyond Python
+
+This project was scaffolded as a Python package. If the scope expands:
+
+- **Adding a Vue 3 frontend:** See [`docs/full-stack.md`](docs/full-stack.md) for how to wrap this into an Nx monorepo with a feature-slice Vue frontend, Vite dev proxy, TanStack Query, and Tailwind CSS.
+- **Deploying to production:** See [`docs/productionalize.md`](docs/productionalize.md) for Docker builds, CI, health endpoints, environment management, and serving strategy.

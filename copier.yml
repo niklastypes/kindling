@@ -12,6 +12,8 @@ _skip_if_exists:
   - README.md
   - LICENSE
   - .gitignore
+  - docs/full-stack.md
+  - docs/productionalize.md
 
 # --- Questions ---
 

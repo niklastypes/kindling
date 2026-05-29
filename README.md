@@ -16,6 +16,7 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - **Renovate** for automated dependency updates
 - Auto `git init`, conventional first commit, and `v0.1.0` tag on generation
 - src-layout, MIT license, AGENTS.md with project standards
+- `docs/` with guides for adding a [Vue 3 frontend](project/docs/full-stack.md) and [going to production](project/docs/productionalize.md)
 
 ## Usage
 
