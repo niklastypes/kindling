@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.2](https://github.com/niklastypes/kindling/compare/v0.5.1...v0.5.2) (2026-05-29)
+
+
+### Documentation
+
+* add guidance for evolving into full-stack application & productionalization ([b95cfda](https://github.com/niklastypes/kindling/commit/b95cfdaff32ed12234445d84509dad78bafbdb5e))
+* add testing strategy section and fix single-app paths ([0097e56](https://github.com/niklastypes/kindling/commit/0097e56bd70d41c435ae288524e6d9e313255ea4))
+
 ## [0.5.1](https://github.com/niklastypes/kindling/compare/v0.5.0...v0.5.1) (2026-05-22)
 
 
