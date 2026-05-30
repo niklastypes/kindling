@@ -50,6 +50,7 @@ When `kindle <project>` is run with `enable_github_pm=true`:
 ### 2. Project v2 with saved views
 - Create a Project linked to the repo
 - Custom fields:
+  - `Status`: single-select — Todo / In Progress / In Review / Done / Blocked (tighter than GitHub's default `Backlog/Ready/In progress/In review/Done`; the Backlog/Ready split is redundant for solo dev, and Blocked earns its keep as an explicit state)
   - `Lane`: single-select — Agent / Lifesim / Hardware / Observability / Cross (defaults; customizable per project)
   - `Start date` + `Target date`: dates (used by the Roadmap view)
   - `Iteration`: optional, off by default
