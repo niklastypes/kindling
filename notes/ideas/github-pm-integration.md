@@ -107,6 +107,22 @@ The issue keeps its full comment history. No copy-paste between systems.
 - `CLAUDE.md` gets a section: "agents pulling issues should follow this lifecycle: pick from `kind:slice` in current milestone → set Status:In Progress → open PR with `Fixes #N` → review → merge → Status:Done auto-set"
 - `roadmap.md` retires to a slim ~30-line intro pointing at the Project URL (see "Graduation" below)
 
+## Retrofit constraint: the bootstrap hook must be idempotent
+
+Existing projects that were `kindled` before this feature shipped (e.g. Vox Machina, Grimoire) should be able to opt in retroactively via `copier update`. Copier's update flow re-runs the questionnaire with previous answers pre-filled, so the new `enable_github_pm` question naturally surfaces on update — the only requirement is that the post-generation hook handles "already partially set up" cleanly.
+
+Concrete requirements:
+
+- **Repo creation**: skip if remote exists.
+- **Project creation**: skip if a Project with the expected name is already linked to the repo; otherwise create with a deterministic name (`<project> Roadmap`) and link.
+- **Labels**: `gh label create --force` (effectively upsert). Safe to re-run.
+- **Milestones**: skip ones that already exist by name. Never overwrite.
+- **Roadmap parse is optional**: if `roadmap.md` doesn't exist or doesn't have the expected stage headers, gracefully degrade to "create the empty Project + labels + workflows + issue templates" only. The user populates Milestones / Stages / Epics manually as their roadmap shape emerges.
+- **Issue templates + workflows**: standard Copier-templated files in `.github/`, handled by Copier's normal update behavior. No special logic needed.
+- **`CONTRIBUTING.md` + `CLAUDE.md` insertions**: idempotent markers (e.g. `<!-- kindling:gh-pm-conventions -->`) so re-runs don't duplicate sections.
+
+Practical implication for Vox Machina-shaped retrofits: the user gets the Project + labels + workflows + issue templates after `copier update`, but no auto-created Milestones or Stage issues (since Vox Machina doesn't have the Bus Ticket / Skateboard staging that Momo does). That's the correct behavior — projects without a Kniberg-style roadmap shouldn't have one forced on them by the bootstrap.
+
 ## Why this is a Kindling concern, not a per-project concern
 
 Two reasons:
