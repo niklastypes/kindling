@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.3](https://github.com/niklastypes/kindling/compare/v0.5.2...v0.5.3) (2026-05-30)
+
+
+### Documentation
+
+* lock in GitHub PM mapping + idea capture flow ([deae517](https://github.com/niklastypes/kindling/commit/deae517814841bfa47494b4fdeb59627a2660a82))
+* lock Status field to Todo/In Progress/In Review/Done/Blocked ([72983bb](https://github.com/niklastypes/kindling/commit/72983bb4cbfde010a36cc9a4a131ac598f8e5f59))
+* plan GitHub project management Copier opt-in ([640b402](https://github.com/niklastypes/kindling/commit/640b4022d41c1ba4f550476e750090ef08e622e0))
+* require idempotent bootstrap for retrofits ([59fe943](https://github.com/niklastypes/kindling/commit/59fe9431aaab40f6e1e71115e66a97211d04f202))
+
 ## [0.5.2](https://github.com/niklastypes/kindling/compare/v0.5.1...v0.5.2) (2026-05-29)
 
 
