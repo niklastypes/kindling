@@ -1,0 +1,11 @@
+{
+  "defaultBase": "main",
+  "plugins": [
+    "@nxlv/python",
+    "@nx/vite/plugin"
+  ],
+  "targetDefaults": {
+    "build": { "cache": true, "dependsOn": ["^build"] },
+    "typecheck": { "dependsOn": ["^build"] }
+  }
+}

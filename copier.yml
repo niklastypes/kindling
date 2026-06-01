@@ -6,6 +6,19 @@ _exclude:
   - __pycache__
   - .ruff_cache
   - .ty
+  # Python-only mode: exclude full-stack files
+  - "{% if not full_stack %}/api/{% endif %}"
+  - "{% if not full_stack %}/ui/{% endif %}"
+  - "{% if not full_stack %}nx.json{% endif %}"
+  - "{% if not full_stack %}/package.json{% endif %}"
+  - "{% if not full_stack %}pnpm-workspace.yaml{% endif %}"
+  - "{% if not full_stack %}tsconfig.base.json{% endif %}"
+  # Full-stack mode: exclude root-level Python files (they live in api/)
+  - "{% if full_stack %}/src/{% endif %}"
+  - "{% if full_stack %}/tests/{% endif %}"
+  - "{% if full_stack %}/pyproject.toml{% endif %}"
+  - "{% if full_stack %}/.python-version{% endif %}"
+  - "{% if full_stack %}/.env.example{% endif %}"
 
 _skip_if_exists:
   - AGENTS.md
@@ -20,6 +33,7 @@ _skip_if_exists:
 project_name:
   type: str
   help: "Project name in kebab-case (lowercase letters, digits, single hyphens, e.g. my-project)"
+  default: "{{ _copier_conf.dst_path.name }}"
   validator: >-
     {% if not project_name %}
     Project name is required.
@@ -50,10 +64,24 @@ python_version:
     - "3.12"
   default: "3.13"
 
+full_stack:
+  type: bool
+  help: "Scaffold a full-stack app (Vue 3 + FastAPI + Nx monorepo)?"
+  default: false
+
 # --- Tasks ---
 
 _tasks:
-  - "[ ! -d .git ] && git init && (git config user.email >/dev/null 2>&1 || git config user.email 'kindled@local') && (git config user.name >/dev/null 2>&1 || git config user.name 'Kindling') && git add . && git commit -m 'feat: initial commit kindled with 🪵 Kindling' && git tag v0.1.0 || true"
+  - >-
+    [ ! -d .git ] &&
+    git init &&
+    (git config user.email >/dev/null 2>&1 || git config user.email 'kindled@local') &&
+    (git config user.name >/dev/null 2>&1 || git config user.name 'Kindling') &&
+    ({% if full_stack %}cd api && {% endif %}uv sync || true) &&
+    {% if full_stack %}(pnpm install || true) && {% endif %}
+    git add . &&
+    git commit -m 'feat: initial commit kindled with 🪵 Kindling' &&
+    git tag v0.1.0 || true
 
 # --- Computed (not shown to user) ---
 
