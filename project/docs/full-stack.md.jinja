@@ -1,10 +1,16 @@
 # Full-Stack Guide
+{% if full_stack %}
+
+This project was scaffolded as a full-stack app with Vue 3 + FastAPI + Nx. The monorepo structure, Nx wiring, Vite proxy, and FastAPI health endpoint are already set up. This guide covers conventions and patterns for building on top of the scaffold.
+{% else %}
 
 How to evolve a Kindling-generated Python project into a Vue 3 + FastAPI monorepo. This doc covers everything Kindling doesn't: the frontend, Nx wiring, and how the two sides connect.
 
 Kindling owns the Python tooling choices (ruff, ty, pytest, uv, hatchling). Don't override them.
+{% endif %}
 
 ---
+{% if not full_stack %}
 
 ## Monorepo layout
 
@@ -155,6 +161,7 @@ npx nx show project api
 ```
 
 ---
+{% endif %}
 
 ## How backend & frontend communicate
 
@@ -192,6 +199,7 @@ FastAPI has native support for both: `StreamingResponse` for SSE and `WebSocket`
 
 Kindling provides the Python skeleton. Add these FastAPI-specific pieces inside `src/<pkg>/`.
 
+{% if not full_stack %}
 ### Dependencies to add
 
 Add to Kindling's `[project.dependencies]` in `pyproject.toml`:
@@ -216,6 +224,7 @@ dev = [
 ]
 ```
 
+{% endif %}
 ### App factory
 
 ```python
@@ -336,6 +345,7 @@ async def client(app):
 ---
 
 ## Frontend architecture
+{% if not full_stack %}
 
 ### Setup
 
@@ -344,6 +354,7 @@ cd ui
 pnpm install
 npx shadcn-vue@latest init    # Style: new-york, Base color: neutral, CSS variables: yes
 ```
+{% endif %}
 
 ### Source tree
 
@@ -377,6 +388,7 @@ ui/src/
 └── components/ui/                # shadcn-vue (vendored by CLI)
 ```
 
+{% if not full_stack %}
 ### Key files
 
 **package.json** dependencies:
@@ -524,6 +536,8 @@ export const queryClient = new QueryClient({
   },
 });
 ```
+
+{% endif %}
 
 ---
 
@@ -679,6 +693,8 @@ export function listItems(): Promise<Item[]> {
 
 Once the API surface grows, replace manual mapping with contract tests. See the testing strategy section in [productionalize.md](productionalize.md) for details on using FastAPI's OpenAPI spec with `openapi-typescript` for compile-time safety.
 
+{% if not full_stack %}
+
 ---
 
 ## Local dev
@@ -695,3 +711,4 @@ npx nx run-many -t serve
 # API  -> http://localhost:8080
 # UI   -> http://localhost:4200 (Vite proxies /api -> :8080)
 ```
+{% endif %}
