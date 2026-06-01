@@ -1,0 +1,16 @@
+{
+  "name": "api",
+  "projectType": "application",
+  "sourceRoot": "api/src",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "uv run uvicorn {{package_name}}.app:create_app --factory --reload --host 0.0.0.0 --port 8080",
+        "cwd": "{projectRoot}",
+        "env": { "CORS_ALLOWED_ORIGINS": "http://localhost:4200" }
+      },
+      "continuous": true
+    }
+  }
+}
