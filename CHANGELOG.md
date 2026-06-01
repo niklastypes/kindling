@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.6.0](https://github.com/niklastypes/kindling/compare/v0.5.2...v0.6.0) (2026-06-01)
+
+
+### Features
+
+* add full_stack question and conditional exclude rules ([cc54072](https://github.com/niklastypes/kindling/commit/cc540728fab76661352c6f8414277166987f9bc2))
+* add full-stack backend template files (api/) ([d98720f](https://github.com/niklastypes/kindling/commit/d98720fe368fe14d2a4b4195a36d2ec35c2f38ca))
+* add full-stack conditionals to gitignore, pre-commit, and CI ([8f52a41](https://github.com/niklastypes/kindling/commit/8f52a4196e0a23346f297875053917b69bcacc01))
+* add full-stack conditionals to README and AGENTS.md ([6c152f8](https://github.com/niklastypes/kindling/commit/6c152f86124947d9a30f2020071092822af51eb5))
+* add full-stack frontend template files (ui/) ([63641e9](https://github.com/niklastypes/kindling/commit/63641e94783f181f9af9ab4eac95577a894c9788))
+* add root monorepo files (nx, pnpm, tsconfig) ([8c3dab2](https://github.com/niklastypes/kindling/commit/8c3dab227501cd697ddcc512cb8350d86f5269aa))
+* full-stack scaffolding ([b04f8be](https://github.com/niklastypes/kindling/commit/b04f8be379627eeea02ac71a6c240e5cfef3d30d))
+* make full-stack.md conditional on full_stack flag ([af5fd0a](https://github.com/niklastypes/kindling/commit/af5fd0a1db9d8dbfe6c0770444615e9d4550943d))
+* update release-please paths and post-gen tasks for full-stack ([db05579](https://github.com/niklastypes/kindling/commit/db05579d27b71940ee23feedc56c6802f0be26f1))
+
+
+### Documentation
+
+* lock in GitHub PM mapping + idea capture flow ([deae517](https://github.com/niklastypes/kindling/commit/deae517814841bfa47494b4fdeb59627a2660a82))
+* lock Status field to Todo/In Progress/In Review/Done/Blocked ([72983bb](https://github.com/niklastypes/kindling/commit/72983bb4cbfde010a36cc9a4a131ac598f8e5f59))
+* mention full-stack option in Kindling README ([49a9782](https://github.com/niklastypes/kindling/commit/49a9782bd832e712434f77d47fa44ac608602505))
+* plan GitHub project management Copier opt-in ([640b402](https://github.com/niklastypes/kindling/commit/640b4022d41c1ba4f550476e750090ef08e622e0))
+* require idempotent bootstrap for retrofits ([59fe943](https://github.com/niklastypes/kindling/commit/59fe9431aaab40f6e1e71115e66a97211d04f202))
+
 ## [0.5.2](https://github.com/niklastypes/kindling/compare/v0.5.1...v0.5.2) (2026-05-29)
 
 
