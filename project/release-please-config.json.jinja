@@ -4,7 +4,11 @@
     ".": {
       "release-type": "python",
       "extra-files": [
+{%- if full_stack %}
+        "api/src/{{package_name}}/__init__.py"
+{%- else %}
         "src/{{package_name}}/__init__.py"
+{%- endif %}
       ]
     }
   }
