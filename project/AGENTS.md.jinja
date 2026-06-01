@@ -4,12 +4,24 @@
 
 ## Quick Reference
 
+{% if full_stack %}
+| Task | Command |
+|---|---|
+| Dev (both) | `npx nx run-many -t serve` |
+| API test | `cd api && uv run pytest --tb=short` |
+| API lint | `cd api && uv run ruff check src/ tests/` |
+| API format | `cd api && uv run ruff format src/ tests/` |
+| API type check | `cd api && uv run ty check src/ tests/` |
+| UI type check | `cd ui && npx vue-tsc --noEmit` |
+| UI build | `cd ui && npx vite build` |
+{% else %}
 | Task | Command |
 |---|---|
 | Test | `uv run pytest --tb=short` |
 | Lint | `uv run ruff check src/ tests/` |
 | Format | `uv run ruff format src/ tests/` |
 | Type check | `uv run ty check src/ tests/` |
+{% endif %}
 
 ## Python Standards
 
@@ -40,15 +52,31 @@
 
 - **Logging:** `%s` formatting (`logger.info("msg %s", var)`), not f-strings
 - **Pydantic** for config and structured data, **dataclasses** for simple internal value objects
+{% if full_stack %}
+- **src-layout:** all backend source code under `api/src/{{package_name}}/`
+{% else %}
 - **src-layout:** all source code under `src/{{package_name}}/`
+{% endif %}
 
 ## Project Layout
 
+{% if full_stack %}
+```
+api/
+  src/{{package_name}}/     # FastAPI backend
+  tests/
+ui/
+  src/                       # Vue 3 frontend
+docs/                        # Guides for evolving the project
+```
+{% else %}
 ```
 src/{{package_name}}/
 tests/
 docs/                          # Guides for evolving the project
 ```
+{% endif %}
+{% if not full_stack %}
 
 ## Growing Beyond Python
 
@@ -56,3 +84,4 @@ This project was scaffolded as a Python package. If the scope expands:
 
 - **Adding a Vue 3 frontend:** See [`docs/full-stack.md`](docs/full-stack.md) for how to wrap this into an Nx monorepo with a feature-slice Vue frontend, Vite dev proxy, TanStack Query, and Tailwind CSS.
 - **Deploying to production:** See [`docs/productionalize.md`](docs/productionalize.md) for Docker builds, CI, health endpoints, environment management, and serving strategy.
+{% endif %}
