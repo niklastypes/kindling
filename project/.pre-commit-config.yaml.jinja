@@ -25,7 +25,11 @@ repos:
     hooks:
       - id: ty-check
         name: ty type check
+{% if full_stack %}
+        entry: uv --directory api run ty check src/ tests/
+{% else %}
         entry: uv run ty check src/ tests/
+{% endif %}
         language: system
         pass_filenames: false
         types: [python]
