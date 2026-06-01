@@ -166,10 +166,14 @@ def test_full_stack_key_files_exist(generated_full_stack: Path) -> None:
     assert (generated_full_stack / "api" / ".python-version").exists()
     assert (generated_full_stack / "api" / ".env.example").exists()
     assert (generated_full_stack / "api" / "project.json").exists()
-    assert (generated_full_stack / "api" / "src" / "test_project" / "__init__.py").exists()
+    assert (
+        generated_full_stack / "api" / "src" / "test_project" / "__init__.py"
+    ).exists()
     assert (generated_full_stack / "api" / "src" / "test_project" / "py.typed").exists()
     assert (generated_full_stack / "api" / "src" / "test_project" / "app.py").exists()
-    assert (generated_full_stack / "api" / "src" / "test_project" / "api" / "health.py").exists()
+    assert (
+        generated_full_stack / "api" / "src" / "test_project" / "api" / "health.py"
+    ).exists()
     assert (generated_full_stack / "api" / "tests" / "__init__.py").exists()
     assert (generated_full_stack / "api" / "tests" / "test_health.py").exists()
     # Frontend
@@ -220,8 +224,17 @@ def test_full_stack_no_jinja_artifacts(generated_full_stack: Path) -> None:
         if ".venv" in rel or "node_modules" in rel:
             continue
         if path.suffix not in {
-            ".py", ".toml", ".yml", ".yaml", ".json", ".md", ".txt",
-            ".ts", ".vue", ".css", ".html",
+            ".py",
+            ".toml",
+            ".yml",
+            ".yaml",
+            ".json",
+            ".md",
+            ".txt",
+            ".ts",
+            ".vue",
+            ".css",
+            ".html",
         }:
             continue
         content = path.read_text()
