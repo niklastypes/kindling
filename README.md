@@ -16,13 +16,17 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - **Renovate** for automated dependency updates
 - Auto `git init`, conventional first commit, and `v0.1.0` tag on generation
 - src-layout, MIT license, AGENTS.md with project standards
-- `docs/` with guides for adding a [Vue 3 frontend](project/docs/full-stack.md) and [going to production](project/docs/productionalize.md)
+- **Optional full-stack scaffold** (Vue 3 + FastAPI + Nx monorepo) with `--data full_stack=true`
+- `docs/` with guides for adding a [Vue 3 frontend](project/docs/full-stack.md.jinja) and [going to production](project/docs/productionalize.md)
 
 ## Usage
 
 ```bash
-# Kindle a new project
+# Kindle a new Python project
 copier copy gh:niklastypes/kindling my-project --trust
+
+# Kindle a full-stack app (Vue 3 + FastAPI + Nx)
+copier copy gh:niklastypes/kindling my-project --trust --data full_stack=true
 
 # Feed the fire: pull template improvements into an existing project
 cd my-project
