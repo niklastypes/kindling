@@ -16,6 +16,7 @@ DEFAULT_DATA = {
     "author_name": "Test Author",
     "github_username": "test-user",
     "python_version": "3.13",
+    "full_stack": False,
 }
 
 
