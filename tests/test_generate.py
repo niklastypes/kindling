@@ -273,3 +273,38 @@ def test_full_stack_md_omits_setup_sections(generated_full_stack: Path) -> None:
     assert "## Monorepo layout" not in content
     assert "## Nx setup" not in content
     assert "## Frontend conventions" in content
+
+
+# --- Python-only regression guards ---
+
+
+def test_python_only_excludes_full_stack_files(generated: Path) -> None:
+    # Copier may create empty dir skeletons, so check for actual files
+    assert not (generated / "api" / "pyproject.toml").exists()
+    assert not (generated / "ui" / "package.json").exists()
+    assert not (generated / "nx.json").exists()
+    assert not (generated / "package.json").exists()
+    assert not (generated / "pnpm-workspace.yaml").exists()
+    assert not (generated / "tsconfig.base.json").exists()
+
+
+def test_python_only_readme_does_not_mention_pnpm(generated: Path) -> None:
+    content = (generated / "README.md").read_text()
+    assert "pnpm" not in content
+
+
+def test_python_only_gitignore_no_node_entries(generated: Path) -> None:
+    content = (generated / ".gitignore").read_text()
+    assert "node_modules" not in content
+
+
+def test_python_only_pre_commit_no_directory_flag(generated: Path) -> None:
+    content = (generated / ".pre-commit-config.yaml").read_text()
+    assert "--directory" not in content
+    assert "uv run ty check src/ tests/" in content
+
+
+def test_python_only_full_stack_md_has_setup_sections(generated: Path) -> None:
+    content = (generated / "docs" / "full-stack.md").read_text()
+    assert "## Monorepo layout" in content
+    assert "## Nx setup" in content
