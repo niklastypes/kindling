@@ -51,6 +51,7 @@ def test_key_files_exist(generated: Path) -> None:
     assert (generated / "renovate.json").exists()
     assert (generated / "release-please-config.json").exists()
     assert (generated / "AGENTS.md").exists()
+    assert (generated / "CLAUDE.md").exists()
     assert (generated / "README.md").exists()
     assert (generated / ".github" / "workflows" / "ci.yml").exists()
     assert (generated / ".github" / "workflows" / "release.yml").exists()
@@ -60,6 +61,9 @@ def test_key_files_exist(generated: Path) -> None:
     assert (generated / "tests" / "__init__.py").exists()
     assert (generated / "tests" / "test_test_project.py").exists()
     assert (generated / "docs" / "productionalize.md").exists()
+    assert (generated / "docs" / "architecture.md").exists()
+    assert (generated / "docs" / "decisions" / "0000-template.md").exists()
+    assert (generated / "docs" / "designs" / ".gitkeep").exists()
 
 
 def test_no_jinja_artifacts(generated: Path) -> None:
@@ -197,6 +201,7 @@ def test_full_stack_key_files_exist(generated_full_stack: Path) -> None:
     assert (generated_full_stack / "LICENSE").exists()
     assert (generated_full_stack / "README.md").exists()
     assert (generated_full_stack / "AGENTS.md").exists()
+    assert (generated_full_stack / "CLAUDE.md").exists()
     assert (generated_full_stack / ".github" / "workflows" / "ci.yml").exists()
     assert (generated_full_stack / ".github" / "workflows" / "release.yml").exists()
     assert (generated_full_stack / "docs" / "full-stack.md").exists()
@@ -319,3 +324,67 @@ def test_python_only_pre_commit_no_directory_flag(generated: Path) -> None:
 
 def test_python_only_no_full_stack_md(generated: Path) -> None:
     assert not (generated / "docs" / "full-stack.md").exists()
+
+
+# --- Docs restructuring tests ---
+
+
+def test_claude_md_exists(generated: Path) -> None:
+    assert (generated / "CLAUDE.md").exists()
+    content = (generated / "CLAUDE.md").read_text()
+    assert "test-project" in content
+    assert "A test project" in content
+
+
+def test_agents_md_is_redirect(generated: Path) -> None:
+    content = (generated / "AGENTS.md").read_text()
+    assert "CLAUDE.md" in content
+    # Should be short (just a redirect, not full instructions)
+    assert len(content.strip().splitlines()) <= 3
+
+
+def test_docs_scaffolding_exists(generated: Path) -> None:
+    assert (generated / "docs" / "architecture.md").exists()
+    assert (generated / "docs" / "decisions" / "0000-template.md").exists()
+    assert (generated / "docs" / "designs" / ".gitkeep").exists()
+    assert (generated / "docs" / "productionalize.md").exists()
+
+
+def test_python_only_no_pm_files(generated: Path) -> None:
+    assert not (generated / ".github" / "ISSUE_TEMPLATE" / "epic.yml").exists()
+    assert not (generated / ".github" / "pull_request_template.md").exists()
+    assert not (generated / "scripts" / "bootstrap-pm.sh").exists()
+    assert not (generated / "docs" / "project-management.md").exists()
+
+
+def test_claude_md_has_growing_beyond_pointers(generated: Path) -> None:
+    content = (generated / "CLAUDE.md").read_text()
+    assert "copier update" in content
+    assert "full_stack=true" in content
+    assert "enable_github_pm=true" in content
+    assert "productionalize.md" in content
+
+
+def test_claude_md_no_pm_lifecycle(generated: Path) -> None:
+    content = (generated / "CLAUDE.md").read_text()
+    assert "Issue Lifecycle" not in content
+    assert "In Progress" not in content
+    assert "Fixes #N" not in content
+
+
+def test_full_stack_claude_md_no_full_stack_pointer(generated_full_stack: Path) -> None:
+    content = (generated_full_stack / "CLAUDE.md").read_text()
+    # Should NOT suggest adding full-stack since it's already enabled
+    assert "full_stack=true" not in content
+    # Should still suggest PM since it's not enabled
+    assert "enable_github_pm=true" in content
+
+
+def test_full_stack_docs_scaffolding(generated_full_stack: Path) -> None:
+    assert (generated_full_stack / "docs" / "architecture.md").exists()
+    assert (generated_full_stack / "docs" / "decisions" / "0000-template.md").exists()
+    assert (generated_full_stack / "docs" / "designs" / ".gitkeep").exists()
+    # Full-stack architecture.md should mention api/ and ui/
+    content = (generated_full_stack / "docs" / "architecture.md").read_text()
+    assert "api/" in content
+    assert "ui/" in content
