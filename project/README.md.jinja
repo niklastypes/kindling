@@ -31,7 +31,19 @@ uv run pre-commit install
 ```
 {% endif %}
 
-Then enable release-please: go to **Settings → Actions → General → Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**.
+Then enable release-please: go to **Settings > Actions > General > Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**.
+{% if enable_github_pm %}
+
+### Project Management Setup
+
+After pushing to GitHub, run the bootstrap script to set up your Project board, labels, and custom fields:
+
+```bash
+./scripts/bootstrap-pm.sh
+```
+
+See [`docs/project-management.md`](docs/project-management.md) for how to work with issues, the label system, and the idea capture workflow.
+{% endif %}
 
 ## Development
 
