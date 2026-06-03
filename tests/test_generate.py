@@ -17,6 +17,7 @@ DEFAULT_DATA = {
     "github_username": "test-user",
     "python_version": "3.13",
     "full_stack": False,
+    "enable_github_pm": False,
 }
 
 
@@ -58,7 +59,6 @@ def test_key_files_exist(generated: Path) -> None:
     assert (generated / ".gitattributes").exists()
     assert (generated / "tests" / "__init__.py").exists()
     assert (generated / "tests" / "test_test_project.py").exists()
-    assert (generated / "docs" / "full-stack.md").exists()
     assert (generated / "docs" / "productionalize.md").exists()
 
 
@@ -317,7 +317,5 @@ def test_python_only_pre_commit_no_directory_flag(generated: Path) -> None:
     assert "uv run ty check src/ tests/" in content
 
 
-def test_python_only_full_stack_md_has_setup_sections(generated: Path) -> None:
-    content = (generated / "docs" / "full-stack.md").read_text()
-    assert "## Monorepo layout" in content
-    assert "## Nx setup" in content
+def test_python_only_no_full_stack_md(generated: Path) -> None:
+    assert not (generated / "docs" / "full-stack.md").exists()
