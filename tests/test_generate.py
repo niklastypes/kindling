@@ -388,3 +388,84 @@ def test_full_stack_docs_scaffolding(generated_full_stack: Path) -> None:
     content = (generated_full_stack / "docs" / "architecture.md").read_text()
     assert "api/" in content
     assert "ui/" in content
+
+
+# --- GitHub PM generation tests ---
+
+
+PM_DATA = {
+    **DEFAULT_DATA,
+    "enable_github_pm": True,
+}
+
+
+@pytest.fixture
+def generated_pm(tmp_path: Path) -> Path:
+    copier.run_copy(
+        str(TEMPLATE_ROOT),
+        tmp_path / "test-project",
+        data=PM_DATA,
+        unsafe=True,
+        vcs_ref="HEAD",
+    )
+    return tmp_path / "test-project"
+
+
+def test_pm_key_files_exist(generated_pm: Path) -> None:
+    assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "epic.yml").exists()
+    assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "slice.yml").exists()
+    assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "idea.yml").exists()
+    assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "bug.yml").exists()
+    assert (generated_pm / ".github" / "pull_request_template.md").exists()
+    assert (generated_pm / "scripts" / "bootstrap-pm.sh").exists()
+    assert (generated_pm / "docs" / "project-management.md").exists()
+
+
+def test_pm_claude_md_has_lifecycle(generated_pm: Path) -> None:
+    content = (generated_pm / "CLAUDE.md").read_text()
+    assert "Issue Lifecycle" in content
+    assert "In Progress" in content
+    assert "Fixes #N" in content
+    assert "project-management.md" in content
+    assert "Label System" in content
+
+
+def test_pm_bootstrap_script_rendered(generated_pm: Path) -> None:
+    content = (generated_pm / "scripts" / "bootstrap-pm.sh").read_text()
+    assert 'PROJECT_NAME="test-project"' in content
+    assert 'OWNER="test-user"' in content
+    # Should not have unrendered Jinja
+    assert "{{" not in content
+    assert "{%" not in content
+
+
+def test_pm_readme_has_setup_section(generated_pm: Path) -> None:
+    content = (generated_pm / "README.md").read_text()
+    assert "bootstrap-pm.sh" in content
+    assert "project-management.md" in content
+
+
+def test_pm_no_jinja_artifacts(generated_pm: Path) -> None:
+    jinja_var = re.compile(r"(?<!\$){{")
+
+    for path in generated_pm.rglob("*"):
+        if not path.is_file():
+            continue
+        # Skip venvs (installed packages may contain {{ }})
+        rel = str(path.relative_to(generated_pm))
+        if ".venv" in rel:
+            continue
+        if path.suffix not in {
+            ".py",
+            ".toml",
+            ".yml",
+            ".yaml",
+            ".json",
+            ".md",
+            ".txt",
+            ".sh",
+        }:
+            continue
+        content = path.read_text()
+        assert not jinja_var.search(content), f"Unrendered Jinja in {path}"
+        assert "{%" not in content, f"Unrendered Jinja tag in {path}"
