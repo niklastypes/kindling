@@ -22,6 +22,16 @@ An atomic vertical slice of work that delivers observable value. Slices cut thro
 
 This is the default work unit. When in doubt, create a slice.
 
+### Spike (`kind:spike`)
+
+A time-boxed research or prototyping task. Success is **knowledge gained**, not user value shipped. Use a spike when you don't know enough yet to design or estimate a real slice.
+
+**Example:** "Investigate whether library X gives us streaming responses with backpressure (2-day budget, decide whether to commit to it or hedge)."
+
+Spikes carry three mandatory fields in the template: a **question** to answer, a **time box** that triggers re-evaluation regardless of progress, and **decision criteria** that say what "done" looks like. The output is usually a closing comment with findings plus a link to wherever the lasting artifact lives (ADR, design doc, throwaway prototype). A spike often spawns a follow-up slice or epic; link the spawned issue from the closing comment.
+
+Keeping spikes as a distinct kind keeps the slice definition sharp (slices deliver user value) and makes the time-box discipline visible in triage.
+
 ### Idea (`kind:idea`)
 
 An uncommitted thought, not planned work. Ideas capture possibilities without committing to them.
@@ -77,9 +87,9 @@ Ideas are tagged with a horizon label indicating when they might become actionab
 
 When an idea is ready to become work:
 
-1. Change the `kind:idea` label to `kind:slice` or `kind:epic`
+1. Change the `kind:idea` label to `kind:slice`, `kind:epic`, or `kind:spike` (if the design space still has unknowns worth investigating first)
 2. Remove the `horizon:*` label
-3. Add acceptance criteria
+3. Add acceptance criteria (or, for a spike, time box + decision criteria)
 4. Link to a parent epic if applicable
 
 ---

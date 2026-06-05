@@ -9,11 +9,26 @@ from pathlib import Path
 def test_pm_key_files_exist(generated_pm: Path) -> None:
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "epic.yml").exists()
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "slice.yml").exists()
+    assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "spike.yml").exists()
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "idea.yml").exists()
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "bug.yml").exists()
     assert (generated_pm / ".github" / "pull_request_template.md").exists()
     assert (generated_pm / "scripts" / "bootstrap-pm.sh").exists()
     assert (generated_pm / "docs" / "project-management.md").exists()
+
+
+def test_pm_spike_template_has_required_fields(generated_pm: Path) -> None:
+    content = (generated_pm / ".github" / "ISSUE_TEMPLATE" / "spike.yml").read_text()
+    assert "kind:spike" in content
+    assert "Question to answer" in content
+    assert "Time box" in content
+    assert "Decision criteria" in content
+
+
+def test_pm_bootstrap_script_seeds_spike_label(generated_pm: Path) -> None:
+    content = (generated_pm / "scripts" / "bootstrap-pm.sh").read_text()
+    assert '["kind:spike"]' in content
+    assert "Time-boxed research" in content
 
 
 def test_pm_claude_md_has_lifecycle(generated_pm: Path) -> None:
