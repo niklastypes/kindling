@@ -73,6 +73,7 @@ Validators in `copier.yml` are Jinja expressions. They return an error message s
 | `.copier-answers.yml` | Tracks template version for `copier update` |
 | `tests/__init__.py` | Empty |
 | `tests/test_{{package_name}}.py` | Smoke test (confirms package imports and has a version) |
+| `docs/ubiquitous-language.md` | Guide: maintaining a canonical glossary for the project's design vocabulary |
 | `docs/full-stack.md` | Guide: adding a Vue 3 frontend + Nx monorepo |
 | `docs/productionalize.md` | Guide: Docker, CI, health endpoints, deploy readiness |
 
