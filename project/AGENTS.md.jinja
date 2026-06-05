@@ -79,7 +79,7 @@ docs/                          # Guides for evolving the project
 
 ## Documentation Conventions
 
-- **Ubiquitous Language:** when this project develops its own load-bearing design vocabulary (three or four terms encoding design rules, or terms that start being defined inconsistently across files), maintain a single canonical glossary at `notes/ubiquitous-language.md` (or `docs/ubiquitous-language.md` if there is no `notes/`). Brief in-place mentions elsewhere link to it; the glossary owns the definition. See [`docs/ubiquitous-language.md`](docs/ubiquitous-language.md) for the full convention.
+- **Ubiquitous Language:** [`docs/ubiquitous-language.md`](docs/ubiquitous-language.md) ships with the convention for maintaining a project glossary. When this project develops its own load-bearing design vocabulary (three or four terms encoding design rules, or terms that start being defined inconsistently across files), append entries to the **Glossary** section at the bottom of the same file. Brief in-place mentions elsewhere link to it; the Glossary owns the definition. `copier update` refreshes the convention half while preserving your entries.
 {% if not full_stack %}
 
 ## Growing Beyond Python
