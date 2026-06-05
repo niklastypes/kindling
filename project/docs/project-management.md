@@ -22,6 +22,8 @@ An atomic vertical slice of work that delivers observable value. Slices cut thro
 
 This is the default work unit. When in doubt, create a slice.
 
+**User-story framing lives at the epic, not the slice.** The slice description should answer "what changes when this lands?" and inherit the user-centric why from its parent epic. Forcing "As a [user], I want [outcome]" onto every slice produces theater on internal work (infrastructure, refactors, plumbing). Keep slices honest; the discipline is "this slice belongs to an epic with a user story," not "every slice is itself a user story."
+
 ### Spike (`kind:spike`)
 
 A time-boxed research or prototyping task. Success is **knowledge gained**, not user value shipped. Use a spike when you don't know enough yet to design or estimate a real slice.
@@ -112,15 +114,35 @@ Create it in Project Settings > Custom Fields > New Field > Single Select.
 
 Create views in the Project UI: Views > New View.
 
-### Kniberg staging
+### Mapping a staged roadmap to GitHub PM
 
-For projects that benefit from staged delivery (Henrik Kniberg's "Walking Skeleton" approach):
+For projects with a staged roadmap (Henrik Kniberg's Earliest Testable / Usable / Lovable model, the vehicle-metaphor stages, or any tier-and-stage structure), the mapping into GitHub PM is:
 
-1. Create `kind:stage` label for stage issues
-2. Create milestones for each stage (e.g., "Stage 1: Walking Skeleton", "Stage 2: Core Features")
-3. Assign slices to milestones to plan delivery order
+| Roadmap concept | GitHub PM concept | Granularity |
+|---|---|---|
+| **Tier** (ETP / EUP / ELP) | (none — too coarse) | Multi-month grouping |
+| **Stage** (Bus Ticket / Skateboard / Car / etc.) | **Milestone** | A meaningful deliverable; weeks to a couple of months |
+| **Release** (2-6 weeks of work) | **Epic** | A coherent outcome with a user story |
+| **Lane bullet** (Agent / Backend / UI / ...) | **Slice** | One PR's worth of work |
 
-Stage issues describe what the product looks like at each stage. They're documentation, not work items.
+Tiers are too coarse for milestones (they'd group multiple concrete deliverables); releases are too fine (often only 2-6 weeks). **Stage is the sweet spot:** each stage has a clear "done" state, runs roughly weeks-to-months, and is a meaningful thing to ship.
+
+**Concrete example:**
+
+```
+Milestone: 🚗 Car   (the "audible companion" stage)
+├── Epic:  Voice on Discord (TTS adapter wired)
+│   ├── Slice: TTS adapter subscribes to the emotion state bus
+│   ├── Slice: Script generator produces text + emotion-tagged spans
+│   ├── Slice: Bot joins voice channel and plays generated audio
+│   └── Slice: Hardware orb distorts with TTS amplitude
+├── Epic:  Diary writing (publishes to blog as the first producer artifact)
+└── Epic:  Independent interests + self-awareness
+```
+
+**Useful constraint:** an epic must fit inside a single milestone. The moment you try to assign an epic that spans two milestones, the mismatch surfaces and forces you to split it (or rethink the stage boundaries). The same goes for slices vs. epics: a slice that doesn't fit in one PR probably wants to be its own epic with multiple slices.
+
+**Optional `kind:stage` label.** If you want each stage represented as a tracked issue (for narrative purposes — "what does the product look like when this stage is done?"), add a `kind:stage` label. The stage issue is documentation about the milestone, not a work item itself.
 
 ### Size labels
 
