@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# ShellCheck suppressions (justified):
-#   SC2016 - the `gh api graphql -f query='...'` calls are single-quoted on
-#            purpose: the $variables inside are GraphQL variables, not shell
-#            expansions.
+# ShellCheck suppression (justified):
 #   SC2015 - the `cmd && info || warn` patterns use the fallback only as a
 #            non-critical log message; not branched logic.
-# shellcheck disable=SC2016,SC2015
+# shellcheck disable=SC2015
 set -euo pipefail
 
 # =============================================================================
@@ -102,7 +99,6 @@ echo ""
 echo "=== Setting up GitHub Project ==="
 
 # Check if a project with this name already exists
-PROJECT_EXISTS=false
 PROJECT_NUMBER=""
 
 # Search for existing project by name
@@ -117,7 +113,6 @@ for p in data.get('projects', []):
 " 2>/dev/null || echo "")
 
 if [ -n "${EXISTING}" ]; then
-    PROJECT_EXISTS=true
     PROJECT_NUMBER="${EXISTING}"
     warn "Project '${PROJECT_NAME}' already exists (number: ${PROJECT_NUMBER})"
 else
@@ -150,128 +145,22 @@ gh project link "${PROJECT_NUMBER}" --owner "${OWNER}" --repo "${REPO}" 2>/dev/n
     warn "Project may already be linked to repository"
 
 # =============================================================================
-# Custom Fields: Status options
-# =============================================================================
-
-echo ""
-echo "=== Configuring Status field ==="
-
-# Get all fields for the project
-FIELDS_JSON=$(gh project field-list "${PROJECT_NUMBER}" --owner "${OWNER}" --format json 2>/dev/null || echo '{"fields":[]}')
-
-# Find the Status field ID and its existing options
-STATUS_FIELD_ID=$(echo "${FIELDS_JSON}" | python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-for f in data.get('fields', []):
-    if f.get('name') == 'Status':
-        print(f.get('id', ''))
-        break
-" 2>/dev/null || echo "")
-
-if [ -z "${STATUS_FIELD_ID}" ]; then
-    warn "Status field not found. It should exist by default on new projects."
-else
-    info "Found Status field: ${STATUS_FIELD_ID}"
-
-    # Get current Status options
-    CURRENT_OPTIONS=$(gh api graphql -f query='
-        query($projectId: ID!) {
-            node(id: $projectId) {
-                ... on ProjectV2 {
-                    field(name: "Status") {
-                        ... on ProjectV2SingleSelectField {
-                            options {
-                                id
-                                name
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    ' -f projectId="${PROJECT_ID}" 2>/dev/null || echo '{}')
-
-    # Check which options already exist
-    HAS_IN_REVIEW=$(echo "${CURRENT_OPTIONS}" | python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-options = data.get('data',{}).get('node',{}).get('field',{}).get('options',[])
-print('true' if any(o['name'] == 'In Review' for o in options) else 'false')
-" 2>/dev/null || echo "false")
-
-    HAS_BLOCKED=$(echo "${CURRENT_OPTIONS}" | python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-options = data.get('data',{}).get('node',{}).get('field',{}).get('options',[])
-print('true' if any(o['name'] == 'Blocked' for o in options) else 'false')
-" 2>/dev/null || echo "false")
-
-    # Add "In Review" if it doesn't exist
-    if [ "${HAS_IN_REVIEW}" = "true" ]; then
-        warn "Status option 'In Review' already exists"
-    else
-        gh api graphql -f query='
-            mutation($projectId: ID!, $fieldId: ID!) {
-                updateProjectV2Field(input: {
-                    projectId: $projectId
-                    fieldId: $fieldId
-                    singleSelectField: {
-                        options: {
-                            name: "In Review"
-                            color: YELLOW
-                            description: "PR opened, awaiting review"
-                        }
-                    }
-                }) {
-                    projectV2Field {
-                        ... on ProjectV2SingleSelectField {
-                            id
-                        }
-                    }
-                }
-            }
-        ' -f projectId="${PROJECT_ID}" -f fieldId="${STATUS_FIELD_ID}" 2>/dev/null && \
-            info "Added Status option: In Review" || \
-            warn "Could not add 'In Review' option (may need manual setup)"
-    fi
-
-    # Add "Blocked" if it doesn't exist
-    if [ "${HAS_BLOCKED}" = "true" ]; then
-        warn "Status option 'Blocked' already exists"
-    else
-        gh api graphql -f query='
-            mutation($projectId: ID!, $fieldId: ID!) {
-                updateProjectV2Field(input: {
-                    projectId: $projectId
-                    fieldId: $fieldId
-                    singleSelectField: {
-                        options: {
-                            name: "Blocked"
-                            color: RED
-                            description: "Waiting on external dependency"
-                        }
-                    }
-                }) {
-                    projectV2Field {
-                        ... on ProjectV2SingleSelectField {
-                            id
-                        }
-                    }
-                }
-            }
-        ' -f projectId="${PROJECT_ID}" -f fieldId="${STATUS_FIELD_ID}" 2>/dev/null && \
-            info "Added Status option: Blocked" || \
-            warn "Could not add 'Blocked' option (may need manual setup)"
-    fi
-fi
-
-# =============================================================================
 # Custom Fields: Date fields
 # =============================================================================
+#
+# Note: adding "In Review" and "Blocked" options to the default Status field
+# used to live here, but GitHub's GraphQL API for Projects v2 has dropped
+# `UpdateProjectV2FieldInput.singleSelectField`, so the mutation now fails
+# with "argumentNotAccepted". The workaround (replacing the full options
+# list) is not idempotency-safe and would rotate IDs of items already
+# assigned. Cleaner to do it in the UI (Settings -> Fields -> Status ->
+# Edit) and surface it as a manual step in the summary below.
 
 echo ""
 echo "=== Creating custom date fields ==="
+
+# Get all fields for the project (used by the existence checks below)
+FIELDS_JSON=$(gh project field-list "${PROJECT_NUMBER}" --owner "${OWNER}" --format json 2>/dev/null || echo '{"fields":[]}')
 
 # Check if Start date field exists
 HAS_START_DATE=$(echo "${FIELDS_JSON}" | python3 -c "
@@ -309,68 +198,9 @@ else
         warn "Could not create 'Target date' field"
 fi
 
-# =============================================================================
-# Views
-# =============================================================================
-
-echo ""
-echo "=== Creating views ==="
-
-# Only create views for new projects (existing projects likely have custom views)
-if [ "${PROJECT_EXISTS}" = "true" ]; then
-    warn "Skipping view creation for existing project (you may have custom views)"
-else
-    # Board view (default view is usually a table, add a board)
-    gh api graphql -f query='
-        mutation($projectId: ID!) {
-            createProjectV2View(input: {
-                projectId: $projectId
-                name: "Board"
-                layout: BOARD_LAYOUT
-            }) {
-                projectV2View {
-                    id
-                }
-            }
-        }
-    ' -f projectId="${PROJECT_ID}" 2>/dev/null && \
-        info "Created view: Board" || \
-        warn "Could not create Board view"
-
-    # Roadmap view
-    gh api graphql -f query='
-        mutation($projectId: ID!) {
-            createProjectV2View(input: {
-                projectId: $projectId
-                name: "Roadmap"
-                layout: ROADMAP_LAYOUT
-            }) {
-                projectV2View {
-                    id
-                }
-            }
-        }
-    ' -f projectId="${PROJECT_ID}" 2>/dev/null && \
-        info "Created view: Roadmap" || \
-        warn "Could not create Roadmap view"
-
-    # Table view
-    gh api graphql -f query='
-        mutation($projectId: ID!) {
-            createProjectV2View(input: {
-                projectId: $projectId
-                name: "Table"
-                layout: TABLE_LAYOUT
-            }) {
-                projectV2View {
-                    id
-                }
-            }
-        }
-    ' -f projectId="${PROJECT_ID}" 2>/dev/null && \
-        info "Created view: Table" || \
-        warn "Could not create Table view"
-fi
+# Note: programmatic view creation used to live here via createProjectV2View,
+# but the mutation is no longer accepted by GitHub's GraphQL API. Views are
+# now a UI-only operation; surfaced as a manual step in the summary below.
 
 # =============================================================================
 # Summary
@@ -385,13 +215,18 @@ echo "  Project: ${PROJECT_NAME} (#${PROJECT_NUMBER})"
 echo "  URL:     https://github.com/orgs/${OWNER}/projects/${PROJECT_NUMBER}"
 echo "           (or https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER})"
 echo ""
-echo "  Manual steps remaining:"
-echo "  1. Enable built-in workflows in Project Settings:"
+echo "  Manual steps remaining (the GitHub UI is the supported path for these):"
+echo "  1. Add Status options 'In Review' and 'Blocked':"
+echo "       Project menu (⋯) -> Settings -> Fields -> Status -> Edit"
+echo "  2. Create the views you want (e.g. Board, Roadmap, Table):"
+echo "       Click + next to the view tabs -> New view"
+echo "  3. Enable built-in workflows in Project Settings -> Workflows:"
 echo "     - Auto-add new issues to project"
 echo "     - Auto-set Status to 'Todo' on new issues"
+echo "     - Auto-move to 'In Review' when a linked PR opens"
 echo "     - Auto-move to 'Done' when issue is closed"
-echo "  2. Optionally configure the Roadmap view date fields"
-echo "     (set Start date and Target date as the date sources)"
+echo "  4. If you created a Roadmap view, set Start date and Target date"
+echo "     as the date sources."
 echo ""
 echo "  See docs/project-management.md for usage guide."
 echo "=========================================="
