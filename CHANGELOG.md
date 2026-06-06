@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/niklastypes/kindling/compare/v0.7.0...v0.7.1) (2026-06-06)
+
+
+### Bug Fixes
+
+* PM bootstrap labels ([0596747](https://github.com/niklastypes/kindling/commit/059674708f02d4de7dd8501a6c4f84b09c5e913d))
+* refactor labels block to dodge bash set -u colon-key bug ([f45232a](https://github.com/niklastypes/kindling/commit/f45232a9493b915f25642818c716cb0868fb50e0))
+
 ## [0.7.0](https://github.com/niklastypes/kindling/compare/v0.6.0...v0.7.0) (2026-06-06)
 
 
