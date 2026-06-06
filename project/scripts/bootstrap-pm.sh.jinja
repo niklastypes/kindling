@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 # ShellCheck suppressions (justified):
-#   SC2034 - the *_LABELS and *_DESCRIPTIONS associative arrays are read via
-#            `local -n` namerefs inside create_labels(); ShellCheck can't
-#            statically follow indirection so it sees them as unused.
 #   SC2016 - the `gh api graphql -f query='...'` calls are single-quoted on
 #            purpose: the $variables inside are GraphQL variables, not shell
 #            expansions.
 #   SC2015 - the `cmd && info || warn` patterns use the fallback only as a
 #            non-critical log message; not branched logic.
-# shellcheck disable=SC2034,SC2016,SC2015
+# shellcheck disable=SC2016,SC2015
 set -euo pipefail
 
 # =============================================================================
@@ -68,67 +65,34 @@ info "Prerequisites satisfied"
 echo ""
 echo "=== Seeding labels ==="
 
-# Kind labels
-declare -A KIND_LABELS=(
-    ["kind:epic"]="#6f42c1"
-    ["kind:slice"]="#0075ca"
-    ["kind:spike"]="#5319e7"
-    ["kind:idea"]="#e4e669"
-    ["kind:bug"]="#d73a4a"
+# Labels are defined as `name|color|description` triples in a flat array.
+# (Earlier versions used `declare -A` associative arrays keyed on `"kind:epic"`,
+# but bash's `set -u` mis-parses the colon as a parameter-expansion modifier
+# and aborts with `kind: unbound variable` before the loop even runs.)
+LABELS=(
+    "kind:epic|#6f42c1|Release cluster, groups related slices"
+    "kind:slice|#0075ca|Atomic vertical slice of work"
+    "kind:spike|#5319e7|Time-boxed research; success is knowledge gained"
+    "kind:idea|#e4e669|Uncommitted idea, not yet planned"
+    "kind:bug|#d73a4a|Defect"
+    "horizon:now|#0e8a16|Actively considering, likely becomes work soon"
+    "horizon:next|#fbca04|On deck, probably next phase"
+    "horizon:later|#c5def5|Visionary, no timeline"
+    "priority:p0|#b60205|Drop everything"
+    "priority:p1|#d93f0b|Important, do soon"
+    "priority:p2|#fbca04|Normal"
+    "priority:p3|#0e8a16|Nice to have"
 )
 
-declare -A KIND_DESCRIPTIONS=(
-    ["kind:epic"]="Release cluster, groups related slices"
-    ["kind:slice"]="Atomic vertical slice of work"
-    ["kind:spike"]="Time-boxed research; success is knowledge gained"
-    ["kind:idea"]="Uncommitted idea, not yet planned"
-    ["kind:bug"]="Defect"
-)
-
-# Horizon labels
-declare -A HORIZON_LABELS=(
-    ["horizon:now"]="#0e8a16"
-    ["horizon:next"]="#fbca04"
-    ["horizon:later"]="#c5def5"
-)
-
-declare -A HORIZON_DESCRIPTIONS=(
-    ["horizon:now"]="Actively considering, likely becomes work soon"
-    ["horizon:next"]="On deck, probably next phase"
-    ["horizon:later"]="Visionary, no timeline"
-)
-
-# Priority labels
-declare -A PRIORITY_LABELS=(
-    ["priority:p0"]="#b60205"
-    ["priority:p1"]="#d93f0b"
-    ["priority:p2"]="#fbca04"
-    ["priority:p3"]="#0e8a16"
-)
-
-declare -A PRIORITY_DESCRIPTIONS=(
-    ["priority:p0"]="Drop everything"
-    ["priority:p1"]="Important, do soon"
-    ["priority:p2"]="Normal"
-    ["priority:p3"]="Nice to have"
-)
-
-create_labels() {
-    local -n labels=$1
-    local -n descriptions=$2
-    for label in "${!labels[@]}"; do
-        gh label create "${label}" \
-            --repo "${REPO}" \
-            --color "${labels[$label]#\#}" \
-            --description "${descriptions[$label]}" \
-            --force 2>/dev/null
-        info "Label: ${label}"
-    done
-}
-
-create_labels KIND_LABELS KIND_DESCRIPTIONS
-create_labels HORIZON_LABELS HORIZON_DESCRIPTIONS
-create_labels PRIORITY_LABELS PRIORITY_DESCRIPTIONS
+for entry in "${LABELS[@]}"; do
+    IFS='|' read -r label_name label_color label_description <<< "${entry}"
+    gh label create "${label_name}" \
+        --repo "${REPO}" \
+        --color "${label_color#\#}" \
+        --description "${label_description}" \
+        --force 2>/dev/null
+    info "Label: ${label_name}"
+done
 
 # =============================================================================
 # Project
