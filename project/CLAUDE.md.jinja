@@ -91,7 +91,7 @@ Keep both up to date as the codebase evolves:
 - **`docs/architecture.md`**: Update when making architectural changes. This is the high-level map of the system.
 - **`docs/decisions/`**: When making significant architectural decisions, create an ADR following the template in `0000-template.md`. Number sequentially (`0001-`, `0002-`, etc.).
 - **`docs/designs/`**: Use for pre-implementation design thinking. These are working documents, not permanent records.
-- **`notes/ubiquitous-language.md`**: When the project develops its own load-bearing design vocabulary (three or four terms encoding design rules, or terms that start being defined inconsistently across files), maintain a single canonical glossary. Brief in-place mentions elsewhere link to it. See [`docs/ubiquitous-language.md`](docs/ubiquitous-language.md) for the full convention.
+- **`docs/ubiquitous-language.md`**: Ships with the convention for maintaining a project glossary. When the project develops its own load-bearing design vocabulary (three or four terms encoding design rules, or terms that start being defined inconsistently across files), append entries to the **Glossary** section at the bottom of the same file. Brief in-place mentions elsewhere link to it; the Glossary owns the definition. `copier update` refreshes the convention half while preserving your entries.
 {% if enable_github_pm %}
 
 ## Working with Issues
