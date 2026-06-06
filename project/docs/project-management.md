@@ -4,6 +4,26 @@ This project uses GitHub Projects v2 for work tracking, with issue templates and
 
 ---
 
+## Initial setup after bootstrap
+
+`./scripts/bootstrap-pm.sh` seeds the project, labels, and date fields automatically. The following steps live in the GitHub UI (the supported path for these operations — GitHub's Projects v2 API doesn't currently expose them cleanly):
+
+1. **Add Status options `In Review` and `Blocked`.**
+   Project menu (`⋯`) → Settings → Fields → Status → Edit → add the two options. The workflow lifecycle below references both.
+2. **Create the views you want** (e.g., Board, Roadmap, Table).
+   Click `+` next to the view tabs → New view → pick a layout.
+3. **Enable built-in workflows.**
+   Project Settings → Workflows. Turn on:
+   - Auto-add new issues to project
+   - Auto-set Status to `Todo` on new issues
+   - Auto-move to `In Review` when a linked PR opens
+   - Auto-move to `Done` when issue is closed
+4. **If you created a Roadmap view**, set `Start date` and `Target date` as the date sources in the view's settings.
+
+These steps are also printed in the script's summary output, so a re-run reminds you. The doc here is the durable record for anyone reading project-management.md without having just run the script.
+
+---
+
 ## Issue Types
 
 ### Epic (`kind:epic`)
