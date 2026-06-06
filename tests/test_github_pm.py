@@ -31,8 +31,7 @@ def test_pm_spike_template_has_required_fields(generated_pm: Path) -> None:
 
 def test_pm_bootstrap_script_seeds_spike_label(generated_pm: Path) -> None:
     content = (generated_pm / "scripts" / "bootstrap-pm.sh").read_text()
-    assert '["kind:spike"]' in content
-    assert "Time-boxed research" in content
+    assert "kind:spike|#5319e7|Time-boxed research" in content
 
 
 def test_pm_claude_md_has_lifecycle(generated_pm: Path) -> None:
