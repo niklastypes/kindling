@@ -127,18 +127,20 @@ For projects with a staged roadmap (Henrik Kniberg's Earliest Testable / Usable 
 
 Tiers are too coarse for milestones (they'd group multiple concrete deliverables); releases are too fine (often only 2-6 weeks). **Stage is the sweet spot:** each stage has a clear "done" state, runs roughly weeks-to-months, and is a meaningful thing to ship.
 
-**Concrete example:**
+**Concrete example** (a hypothetical web app at the daily-usable stage):
 
 ```
-Milestone: 🚗 Car   (the "audible companion" stage)
-├── Epic:  Voice on Discord (TTS adapter wired)
-│   ├── Slice: TTS adapter subscribes to the emotion state bus
-│   ├── Slice: Script generator produces text + emotion-tagged spans
-│   ├── Slice: Bot joins voice channel and plays generated audio
-│   └── Slice: Hardware orb distorts with TTS amplitude
-├── Epic:  Diary writing (publishes to blog as the first producer artifact)
-└── Epic:  Independent interests + self-awareness
+Milestone: 🚲 Bicycle   (the "daily-usable" stage)
+├── Epic:  Users can sign up and log in
+│   ├── Slice: Email + password registration endpoint
+│   ├── Slice: Login form on the frontend
+│   ├── Slice: Session storage with secure cookies
+│   └── Slice: Database migration for the users table
+├── Epic:  Users can publish a post
+└── Epic:  Users can read a feed of recent posts
 ```
+
+Note the last slice in the first epic ("Database migration for the users table") is internal plumbing — its user-centric why is anchored at the epic level ("users can sign up and log in"). The slice itself reads honestly as what changes, no "As a user, I want a database table..." theater required.
 
 **Useful constraint:** an epic must fit inside a single milestone. The moment you try to assign an epic that spans two milestones, the mismatch surfaces and forces you to split it (or rethink the stage boundaries). The same goes for slices vs. epics: a slice that doesn't fit in one PR probably wants to be its own epic with multiple slices.
 
@@ -151,10 +153,9 @@ A cold agent (or new collaborator) joining the project needs to navigate from **
 **From vision → PM.** Vision and roadmap documents in `notes/` (typically `notes/vision.md`, `notes/roadmap.md`, or both) should **name the GitHub milestone each stage corresponds to.** Example:
 
 ```markdown
-## 🚗 Car (audible Momo)
-> Tracked as GitHub milestone: [Car](../../milestones/5)
-> Open epics in this milestone: #42 (voice on Discord), #43 (diary writing),
-> #44 (independent interests).
+## 🚲 Bicycle (daily-usable)
+> Tracked as GitHub milestone: [Bicycle](../../milestones/3)
+> Open epics in this milestone: #14 (auth), #15 (publishing), #16 (feed).
 ```
 
 With those references, an agent reading `notes/roadmap.md` can jump straight to the live work for the current stage. Without them, the vision doc is a museum piece.
@@ -162,14 +163,14 @@ With those references, an agent reading `notes/roadmap.md` can jump straight to 
 **From PM → vision.** Milestone descriptions in GitHub should point back at the vision doc that explains the stage. A one-line link is enough:
 
 ```
-See notes/roadmap.md#car for the stage definition and acceptance criteria.
+See notes/roadmap.md#bicycle for the stage definition and acceptance criteria.
 ```
 
 Epic descriptions follow the same pattern when they correspond to a named release or feature in the vision: link the relevant section.
 
 **What this gives you.** Two anchored points of truth: the *narrative* (why we're building this, what the stage looks like when done) lives in `notes/`; the *state* (what's open, what's in progress, what's done) lives in GitHub. The links between them keep both navigable.
 
-**Maintenance.** When the roadmap evolves (renaming a stage, splitting a release, adding a comet flow), update the vision doc first, then create / rename / re-link the milestones to match. Drift between vision and PM is a real failure mode; treat divergence as a bug.
+**Maintenance.** When the roadmap evolves (renaming a stage, splitting an epic, adding a new release), update the vision doc first, then create / rename / re-link the milestones to match. Drift between vision and PM is a real failure mode; treat divergence as a bug.
 
 ### Size labels
 
