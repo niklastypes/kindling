@@ -144,6 +144,33 @@ Milestone: 🚗 Car   (the "audible companion" stage)
 
 **Optional `kind:stage` label.** If you want each stage represented as a tracked issue (for narrative purposes — "what does the product look like when this stage is done?"), add a `kind:stage` label. The stage issue is documentation about the milestone, not a work item itself.
 
+### Wiring vision to GitHub PM
+
+A cold agent (or new collaborator) joining the project needs to navigate from **"what are we building and why"** (the vision) to **"what's open right now"** (the active work) without round-tripping through tribal knowledge. The wiring is two-way:
+
+**From vision → PM.** Vision and roadmap documents in `notes/` (typically `notes/vision.md`, `notes/roadmap.md`, or both) should **name the GitHub milestone each stage corresponds to.** Example:
+
+```markdown
+## 🚗 Car (audible Momo)
+> Tracked as GitHub milestone: [Car](../../milestones/5)
+> Open epics in this milestone: #42 (voice on Discord), #43 (diary writing),
+> #44 (independent interests).
+```
+
+With those references, an agent reading `notes/roadmap.md` can jump straight to the live work for the current stage. Without them, the vision doc is a museum piece.
+
+**From PM → vision.** Milestone descriptions in GitHub should point back at the vision doc that explains the stage. A one-line link is enough:
+
+```
+See notes/roadmap.md#car for the stage definition and acceptance criteria.
+```
+
+Epic descriptions follow the same pattern when they correspond to a named release or feature in the vision: link the relevant section.
+
+**What this gives you.** Two anchored points of truth: the *narrative* (why we're building this, what the stage looks like when done) lives in `notes/`; the *state* (what's open, what's in progress, what's done) lives in GitHub. The links between them keep both navigable.
+
+**Maintenance.** When the roadmap evolves (renaming a stage, splitting a release, adding a comet flow), update the vision doc first, then create / rename / re-link the milestones to match. Drift between vision and PM is a real failure mode; treat divergence as a bug.
+
 ### Size labels
 
 For estimation (useful in team settings):
