@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.2](https://github.com/niklastypes/kindling/compare/v0.7.1...v0.7.2) (2026-06-06)
+
+
+### Bug Fixes
+
+* drop unsupported Project v2 API calls, surface as manual steps ([57cacdc](https://github.com/niklastypes/kindling/commit/57cacdc9fcb98b613559834101daf1f878b513f8))
+* drop unsupported Project v2 API calls, surface as manual steps ([3d58f1f](https://github.com/niklastypes/kindling/commit/3d58f1f8b342f7b21f522e181bad4cf4c6a2f1d8))
+
 ## [0.7.1](https://github.com/niklastypes/kindling/compare/v0.7.0...v0.7.1) (2026-06-06)
 
 
