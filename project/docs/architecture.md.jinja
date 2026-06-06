@@ -1,0 +1,35 @@
+# Architecture
+
+## Overview
+
+<!-- What does this project do? One paragraph. -->
+
+{% if full_stack %}
+## System Architecture
+
+This is a full-stack application with a Vue 3 frontend and FastAPI backend, orchestrated by Nx.
+
+```
+Browser  -->  Vite (:4200)  -->  /api/*  -->  FastAPI (:8080)
+```
+
+- **`api/`**: FastAPI backend, managed by uv. Source code in `api/src/{{package_name}}/`.
+- **`ui/`**: Vue 3 SPA, built with Vite. Proxies `/api` requests to the backend in development.
+- **`nx.json`**: Nx orchestrates tasks across both projects.
+
+See [`full-stack.md`](full-stack.md) for frontend conventions and backend patterns.
+
+{% else %}
+## System Architecture
+
+<!-- High-level components and how they connect. -->
+
+{% endif %}
+## Key Decisions
+
+Architectural decisions are recorded in `docs/decisions/` using the ADR format.
+See [`decisions/0000-template.md`](decisions/0000-template.md) for the template.
+
+## Data Flow
+
+<!-- How data moves through the system. -->

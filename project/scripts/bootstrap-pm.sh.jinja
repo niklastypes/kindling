@@ -1,0 +1,433 @@
+#!/usr/bin/env bash
+# ShellCheck suppressions (justified):
+#   SC2034 - the *_LABELS and *_DESCRIPTIONS associative arrays are read via
+#            `local -n` namerefs inside create_labels(); ShellCheck can't
+#            statically follow indirection so it sees them as unused.
+#   SC2016 - the `gh api graphql -f query='...'` calls are single-quoted on
+#            purpose: the $variables inside are GraphQL variables, not shell
+#            expansions.
+#   SC2015 - the `cmd && info || warn` patterns use the fallback only as a
+#            non-critical log message; not branched logic.
+# shellcheck disable=SC2034,SC2016,SC2015
+set -euo pipefail
+
+# =============================================================================
+# GitHub Project Management Bootstrap
+#
+# Sets up a GitHub Project v2 board, labels, custom fields, and views for
+# {{project_name}}. Safe to re-run (idempotent): checks before creating,
+# never overwrites existing resources.
+#
+# Prerequisites:
+#   - gh CLI installed and authenticated (https://cli.github.com/)
+#   - Repository pushed to GitHub
+#
+# Usage:
+#   ./scripts/bootstrap-pm.sh
+# =============================================================================
+
+PROJECT_NAME="{{project_name}}"
+OWNER="{{github_username}}"
+REPO="${OWNER}/${PROJECT_NAME}"
+
+# --- Colors for output ---
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+info()  { echo -e "${GREEN}[OK]${NC} $1"; }
+warn()  { echo -e "${YELLOW}[SKIP]${NC} $1"; }
+fail()  { echo -e "${RED}[FAIL]${NC} $1"; exit 1; }
+
+# =============================================================================
+# Prerequisites
+# =============================================================================
+
+echo "=== Checking prerequisites ==="
+
+if ! command -v gh &> /dev/null; then
+    fail "gh CLI not found. Install it: https://cli.github.com/"
+fi
+
+if ! gh auth status &> /dev/null; then
+    fail "gh CLI not authenticated. Run: gh auth login"
+fi
+
+# Verify the repo exists on GitHub
+if ! gh repo view "${REPO}" &> /dev/null; then
+    fail "Repository ${REPO} not found on GitHub. Push your repo first."
+fi
+
+info "Prerequisites satisfied"
+
+# =============================================================================
+# Labels
+# =============================================================================
+
+echo ""
+echo "=== Seeding labels ==="
+
+# Kind labels
+declare -A KIND_LABELS=(
+    ["kind:epic"]="#6f42c1"
+    ["kind:slice"]="#0075ca"
+    ["kind:spike"]="#5319e7"
+    ["kind:idea"]="#e4e669"
+    ["kind:bug"]="#d73a4a"
+)
+
+declare -A KIND_DESCRIPTIONS=(
+    ["kind:epic"]="Release cluster, groups related slices"
+    ["kind:slice"]="Atomic vertical slice of work"
+    ["kind:spike"]="Time-boxed research; success is knowledge gained"
+    ["kind:idea"]="Uncommitted idea, not yet planned"
+    ["kind:bug"]="Defect"
+)
+
+# Horizon labels
+declare -A HORIZON_LABELS=(
+    ["horizon:now"]="#0e8a16"
+    ["horizon:next"]="#fbca04"
+    ["horizon:later"]="#c5def5"
+)
+
+declare -A HORIZON_DESCRIPTIONS=(
+    ["horizon:now"]="Actively considering, likely becomes work soon"
+    ["horizon:next"]="On deck, probably next phase"
+    ["horizon:later"]="Visionary, no timeline"
+)
+
+# Priority labels
+declare -A PRIORITY_LABELS=(
+    ["priority:p0"]="#b60205"
+    ["priority:p1"]="#d93f0b"
+    ["priority:p2"]="#fbca04"
+    ["priority:p3"]="#0e8a16"
+)
+
+declare -A PRIORITY_DESCRIPTIONS=(
+    ["priority:p0"]="Drop everything"
+    ["priority:p1"]="Important, do soon"
+    ["priority:p2"]="Normal"
+    ["priority:p3"]="Nice to have"
+)
+
+create_labels() {
+    local -n labels=$1
+    local -n descriptions=$2
+    for label in "${!labels[@]}"; do
+        gh label create "${label}" \
+            --repo "${REPO}" \
+            --color "${labels[$label]#\#}" \
+            --description "${descriptions[$label]}" \
+            --force 2>/dev/null
+        info "Label: ${label}"
+    done
+}
+
+create_labels KIND_LABELS KIND_DESCRIPTIONS
+create_labels HORIZON_LABELS HORIZON_DESCRIPTIONS
+create_labels PRIORITY_LABELS PRIORITY_DESCRIPTIONS
+
+# =============================================================================
+# Project
+# =============================================================================
+
+echo ""
+echo "=== Setting up GitHub Project ==="
+
+# Check if a project with this name already exists
+PROJECT_EXISTS=false
+PROJECT_NUMBER=""
+
+# Search for existing project by name
+EXISTING=$(gh project list --owner "${OWNER}" --format json 2>/dev/null | \
+    python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for p in data.get('projects', []):
+    if p.get('title') == '${PROJECT_NAME}':
+        print(p.get('number', ''))
+        break
+" 2>/dev/null || echo "")
+
+if [ -n "${EXISTING}" ]; then
+    PROJECT_EXISTS=true
+    PROJECT_NUMBER="${EXISTING}"
+    warn "Project '${PROJECT_NAME}' already exists (number: ${PROJECT_NUMBER})"
+else
+    # Create the project
+    PROJECT_NUMBER=$(gh project create \
+        --owner "${OWNER}" \
+        --title "${PROJECT_NAME}" \
+        --format json 2>/dev/null | \
+        python3 -c "import json,sys; print(json.load(sys.stdin).get('number',''))" 2>/dev/null || echo "")
+
+    if [ -z "${PROJECT_NUMBER}" ]; then
+        fail "Failed to create project. Make sure you have the 'project' scope: gh auth refresh -s project"
+    fi
+    info "Created project '${PROJECT_NAME}' (number: ${PROJECT_NUMBER})"
+fi
+
+# Get the project node ID (needed for GraphQL operations)
+PROJECT_ID=$(gh project view "${PROJECT_NUMBER}" --owner "${OWNER}" --format json 2>/dev/null | \
+    python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null || echo "")
+
+if [ -z "${PROJECT_ID}" ]; then
+    fail "Could not retrieve project ID. Check that you have project permissions."
+fi
+
+info "Project ID: ${PROJECT_ID}"
+
+# Link project to repository
+gh project link "${PROJECT_NUMBER}" --owner "${OWNER}" --repo "${REPO}" 2>/dev/null && \
+    info "Linked project to repository" || \
+    warn "Project may already be linked to repository"
+
+# =============================================================================
+# Custom Fields: Status options
+# =============================================================================
+
+echo ""
+echo "=== Configuring Status field ==="
+
+# Get all fields for the project
+FIELDS_JSON=$(gh project field-list "${PROJECT_NUMBER}" --owner "${OWNER}" --format json 2>/dev/null || echo '{"fields":[]}')
+
+# Find the Status field ID and its existing options
+STATUS_FIELD_ID=$(echo "${FIELDS_JSON}" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for f in data.get('fields', []):
+    if f.get('name') == 'Status':
+        print(f.get('id', ''))
+        break
+" 2>/dev/null || echo "")
+
+if [ -z "${STATUS_FIELD_ID}" ]; then
+    warn "Status field not found. It should exist by default on new projects."
+else
+    info "Found Status field: ${STATUS_FIELD_ID}"
+
+    # Get current Status options
+    CURRENT_OPTIONS=$(gh api graphql -f query='
+        query($projectId: ID!) {
+            node(id: $projectId) {
+                ... on ProjectV2 {
+                    field(name: "Status") {
+                        ... on ProjectV2SingleSelectField {
+                            options {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ' -f projectId="${PROJECT_ID}" 2>/dev/null || echo '{}')
+
+    # Check which options already exist
+    HAS_IN_REVIEW=$(echo "${CURRENT_OPTIONS}" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+options = data.get('data',{}).get('node',{}).get('field',{}).get('options',[])
+print('true' if any(o['name'] == 'In Review' for o in options) else 'false')
+" 2>/dev/null || echo "false")
+
+    HAS_BLOCKED=$(echo "${CURRENT_OPTIONS}" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+options = data.get('data',{}).get('node',{}).get('field',{}).get('options',[])
+print('true' if any(o['name'] == 'Blocked' for o in options) else 'false')
+" 2>/dev/null || echo "false")
+
+    # Add "In Review" if it doesn't exist
+    if [ "${HAS_IN_REVIEW}" = "true" ]; then
+        warn "Status option 'In Review' already exists"
+    else
+        gh api graphql -f query='
+            mutation($projectId: ID!, $fieldId: ID!) {
+                updateProjectV2Field(input: {
+                    projectId: $projectId
+                    fieldId: $fieldId
+                    singleSelectField: {
+                        options: {
+                            name: "In Review"
+                            color: YELLOW
+                            description: "PR opened, awaiting review"
+                        }
+                    }
+                }) {
+                    projectV2Field {
+                        ... on ProjectV2SingleSelectField {
+                            id
+                        }
+                    }
+                }
+            }
+        ' -f projectId="${PROJECT_ID}" -f fieldId="${STATUS_FIELD_ID}" 2>/dev/null && \
+            info "Added Status option: In Review" || \
+            warn "Could not add 'In Review' option (may need manual setup)"
+    fi
+
+    # Add "Blocked" if it doesn't exist
+    if [ "${HAS_BLOCKED}" = "true" ]; then
+        warn "Status option 'Blocked' already exists"
+    else
+        gh api graphql -f query='
+            mutation($projectId: ID!, $fieldId: ID!) {
+                updateProjectV2Field(input: {
+                    projectId: $projectId
+                    fieldId: $fieldId
+                    singleSelectField: {
+                        options: {
+                            name: "Blocked"
+                            color: RED
+                            description: "Waiting on external dependency"
+                        }
+                    }
+                }) {
+                    projectV2Field {
+                        ... on ProjectV2SingleSelectField {
+                            id
+                        }
+                    }
+                }
+            }
+        ' -f projectId="${PROJECT_ID}" -f fieldId="${STATUS_FIELD_ID}" 2>/dev/null && \
+            info "Added Status option: Blocked" || \
+            warn "Could not add 'Blocked' option (may need manual setup)"
+    fi
+fi
+
+# =============================================================================
+# Custom Fields: Date fields
+# =============================================================================
+
+echo ""
+echo "=== Creating custom date fields ==="
+
+# Check if Start date field exists
+HAS_START_DATE=$(echo "${FIELDS_JSON}" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+print('true' if any(f['name'] == 'Start date' for f in data.get('fields', [])) else 'false')
+" 2>/dev/null || echo "false")
+
+if [ "${HAS_START_DATE}" = "true" ]; then
+    warn "Field 'Start date' already exists"
+else
+    gh project field-create "${PROJECT_NUMBER}" \
+        --owner "${OWNER}" \
+        --name "Start date" \
+        --data-type DATE 2>/dev/null && \
+        info "Created field: Start date" || \
+        warn "Could not create 'Start date' field"
+fi
+
+# Check if Target date field exists
+HAS_TARGET_DATE=$(echo "${FIELDS_JSON}" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+print('true' if any(f['name'] == 'Target date' for f in data.get('fields', [])) else 'false')
+" 2>/dev/null || echo "false")
+
+if [ "${HAS_TARGET_DATE}" = "true" ]; then
+    warn "Field 'Target date' already exists"
+else
+    gh project field-create "${PROJECT_NUMBER}" \
+        --owner "${OWNER}" \
+        --name "Target date" \
+        --data-type DATE 2>/dev/null && \
+        info "Created field: Target date" || \
+        warn "Could not create 'Target date' field"
+fi
+
+# =============================================================================
+# Views
+# =============================================================================
+
+echo ""
+echo "=== Creating views ==="
+
+# Only create views for new projects (existing projects likely have custom views)
+if [ "${PROJECT_EXISTS}" = "true" ]; then
+    warn "Skipping view creation for existing project (you may have custom views)"
+else
+    # Board view (default view is usually a table, add a board)
+    gh api graphql -f query='
+        mutation($projectId: ID!) {
+            createProjectV2View(input: {
+                projectId: $projectId
+                name: "Board"
+                layout: BOARD_LAYOUT
+            }) {
+                projectV2View {
+                    id
+                }
+            }
+        }
+    ' -f projectId="${PROJECT_ID}" 2>/dev/null && \
+        info "Created view: Board" || \
+        warn "Could not create Board view"
+
+    # Roadmap view
+    gh api graphql -f query='
+        mutation($projectId: ID!) {
+            createProjectV2View(input: {
+                projectId: $projectId
+                name: "Roadmap"
+                layout: ROADMAP_LAYOUT
+            }) {
+                projectV2View {
+                    id
+                }
+            }
+        }
+    ' -f projectId="${PROJECT_ID}" 2>/dev/null && \
+        info "Created view: Roadmap" || \
+        warn "Could not create Roadmap view"
+
+    # Table view
+    gh api graphql -f query='
+        mutation($projectId: ID!) {
+            createProjectV2View(input: {
+                projectId: $projectId
+                name: "Table"
+                layout: TABLE_LAYOUT
+            }) {
+                projectV2View {
+                    id
+                }
+            }
+        }
+    ' -f projectId="${PROJECT_ID}" 2>/dev/null && \
+        info "Created view: Table" || \
+        warn "Could not create Table view"
+fi
+
+# =============================================================================
+# Summary
+# =============================================================================
+
+echo ""
+echo "=========================================="
+echo "  GitHub PM Bootstrap Complete"
+echo "=========================================="
+echo ""
+echo "  Project: ${PROJECT_NAME} (#${PROJECT_NUMBER})"
+echo "  URL:     https://github.com/orgs/${OWNER}/projects/${PROJECT_NUMBER}"
+echo "           (or https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER})"
+echo ""
+echo "  Manual steps remaining:"
+echo "  1. Enable built-in workflows in Project Settings:"
+echo "     - Auto-add new issues to project"
+echo "     - Auto-set Status to 'Todo' on new issues"
+echo "     - Auto-move to 'Done' when issue is closed"
+echo "  2. Optionally configure the Roadmap view date fields"
+echo "     (set Start date and Target date as the date sources)"
+echo ""
+echo "  See docs/project-management.md for usage guide."
+echo "=========================================="

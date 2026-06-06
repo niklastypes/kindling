@@ -1,0 +1,35 @@
+name: Idea
+description: Capture an uncommitted idea for future consideration
+title: "[Idea] "
+labels: ["kind:idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are uncommitted thoughts, not planned work. Use horizon labels to indicate maturity.
+        When an idea is ready to become work, promote it to a slice or epic.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What's the idea? What problem does it solve or opportunity does it open?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is this interesting?
+      description: What makes this worth considering? What user need or pain point does it address?
+
+  - type: dropdown
+    id: horizon
+    attributes:
+      label: Horizon
+      description: When might this become actionable?
+      options:
+        - "now - actively considering, likely becomes work soon"
+        - "next - on deck, probably next phase"
+        - "later - visionary, no timeline"
+      default: 2

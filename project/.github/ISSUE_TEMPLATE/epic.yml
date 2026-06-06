@@ -1,0 +1,38 @@
+name: Epic
+description: A release cluster that groups related slices of work
+title: "[Epic] "
+labels: ["kind:epic"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        An epic represents a meaningful outcome that may require multiple slices to deliver.
+        Break it down into vertical slices, each delivering observable user value.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What outcome does this epic deliver? Who benefits and how?
+      placeholder: |
+        As a [user type], I want [outcome] so that [benefit].
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How do we know this epic is done?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+
+  - type: textarea
+    id: slices
+    attributes:
+      label: Slices
+      description: Break this epic into vertical slices. Each slice should deliver value independently.
+      placeholder: |
+        - [ ] #N - Slice description
+        - [ ] #N - Slice description

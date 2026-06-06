@@ -1,0 +1,37 @@
+name: Slice
+description: An atomic vertical slice of work that delivers observable value
+labels: ["kind:slice"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A slice cuts through all layers (UI, logic, data) and delivers a single piece of observable value.
+        It should be small enough to complete in one PR.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What does this slice deliver? What will be different when it's done?
+      placeholder: |
+        Describe the user-visible change this slice makes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How do we know this slice is done?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: input
+    id: parent-epic
+    attributes:
+      label: Parent Epic
+      description: Link to the parent epic (if any)
+      placeholder: "#N"

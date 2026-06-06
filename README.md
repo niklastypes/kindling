@@ -17,7 +17,8 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - Auto `git init`, conventional first commit, and `v0.1.0` tag on generation
 - src-layout, MIT license, AGENTS.md with project standards
 - **Optional full-stack scaffold** (Vue 3 + FastAPI + Nx monorepo) with `--data full_stack=true`
-- `docs/` with guides for [the ubiquitous language convention](project/docs/ubiquitous-language.md), adding a [Vue 3 frontend](project/docs/full-stack.md.jinja), and [going to production](project/docs/productionalize.md)
+- **Optional GitHub PM scaffold** (Project board, issue templates, labels, bootstrap script) with `--data enable_github_pm=true`
+- `docs/` with architecture skeleton, ADR template, [the ubiquitous language convention](project/docs/ubiquitous-language.md), and guides for [going to production](project/docs/productionalize.md)
 
 ## Usage
 
@@ -27,6 +28,9 @@ copier copy gh:niklastypes/kindling my-project --trust
 
 # Kindle a full-stack app (Vue 3 + FastAPI + Nx)
 copier copy gh:niklastypes/kindling my-project --trust --data full_stack=true
+
+# Kindle with GitHub Project Management
+copier copy gh:niklastypes/kindling my-project --trust --data enable_github_pm=true
 
 # Feed the fire: pull template improvements into an existing project
 cd my-project

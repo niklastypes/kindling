@@ -1,0 +1,57 @@
+name: Spike
+description: A time-boxed research or prototyping task to answer a question
+title: "[Spike] "
+labels: ["kind:spike"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A spike is time-boxed exploration. Success is **knowledge gained**, not user value shipped.
+        Use a spike when you don't know enough yet to design or estimate a real slice.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question to answer
+      description: What do we want to know by the end of this spike?
+      placeholder: |
+        e.g. "Does library X give us streaming responses with backpressure?"
+        e.g. "Can we hit 60fps on the target device with the current renderer?"
+    validations:
+      required: true
+
+  - type: input
+    id: time-box
+    attributes:
+      label: Time box
+      description: Maximum time before we stop and re-evaluate, regardless of how far we got.
+      placeholder: "e.g. 2 days, 1 sprint, 4 hours"
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision-criteria
+    attributes:
+      label: Decision criteria
+      description: What does "done" look like? What decision will we make at the end?
+      placeholder: |
+        e.g. "We decide whether to commit to approach A or hedge with B."
+        e.g. "We know whether the perf budget is realistic on current hardware."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-output
+    attributes:
+      label: Expected output
+      description: Where will the findings live? (ADR, design doc, prototype repo, comment thread, etc.)
+      placeholder: |
+        e.g. "ADR in docs/decisions/"
+        e.g. "Throwaway prototype in a branch; findings summarized in a closing comment"
+
+  - type: input
+    id: parent
+    attributes:
+      label: Parent
+      description: Link to the epic or slice that needs this question answered (if any)
+      placeholder: "#N"

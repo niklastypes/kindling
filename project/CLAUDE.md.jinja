@@ -1,0 +1,130 @@
+# {{project_name}}
+
+{{project_description}}
+
+## Quick Reference
+
+{% if full_stack %}
+| Task | Command |
+|---|---|
+| Dev (both) | `npx nx run-many -t serve` |
+| API test | `cd api && uv run pytest --tb=short` |
+| API lint | `cd api && uv run ruff check src/ tests/` |
+| API format | `cd api && uv run ruff format src/ tests/` |
+| API type check | `cd api && uv run ty check src/ tests/` |
+| UI type check | `cd ui && npx vue-tsc --noEmit` |
+| UI build | `cd ui && npx vite build` |
+{% else %}
+| Task | Command |
+|---|---|
+| Test | `uv run pytest --tb=short` |
+| Lint | `uv run ruff check src/ tests/` |
+| Format | `uv run ruff format src/ tests/` |
+| Type check | `uv run ty check src/ tests/` |
+{% endif %}
+
+## Python Standards
+
+### Tooling
+
+| Tool | Purpose |
+|---|---|
+| uv | Package management |
+| hatchling | Build backend |
+| ruff | Formatting and linting |
+| ty | Type checking |
+| pytest | Testing |
+| pre-commit | Git hooks (conventional commits, ruff, ty) |
+| release-please | Automated versioning and releases |
+| Renovate | Automated dependency updates |
+
+### Preferred Libraries
+
+| Need | Reach for |
+|---|---|
+| Backend / API | FastAPI |
+| Structured data / config | Pydantic |
+| CLI | typer |
+| AI / agents | PydanticAI |
+| Test fixtures | Polyfactory |
+
+### Patterns
+
+- **Logging:** `%s` formatting (`logger.info("msg %s", var)`), not f-strings
+- **Pydantic** for config and structured data, **dataclasses** for simple internal value objects
+{% if full_stack %}
+- **src-layout:** all backend source code under `api/src/{{package_name}}/`
+{% else %}
+- **src-layout:** all source code under `src/{{package_name}}/`
+{% endif %}
+
+## Project Layout
+
+{% if full_stack %}
+```
+api/
+  src/{{package_name}}/     # FastAPI backend
+  tests/
+ui/
+  src/                       # Vue 3 frontend
+docs/                        # Architecture, decisions, and guides
+```
+{% else %}
+```
+src/{{package_name}}/
+tests/
+docs/                          # Architecture, decisions, and guides
+```
+{% endif %}
+
+## Documentation
+
+Two folders for project documentation, with distinct purposes:
+
+- **`notes/`** holds **in-flux thinking**: vision, roadmap, brainstorms, design exploration, research. Anything not yet built. Version-controlled (so it's never lost) but understood to be evolving. Notes graduate into proper docs as they're implemented.
+- **`docs/`** holds **as-built documentation**: architecture, decisions, guides, API references. If it describes shipped behavior, it lives here.
+
+When in doubt: if it would mislead a reader who treated it as "how the system works today," it belongs in `notes/`, not `docs/`.
+
+Keep both up to date as the codebase evolves:
+
+- **`docs/architecture.md`**: Update when making architectural changes. This is the high-level map of the system.
+- **`docs/decisions/`**: When making significant architectural decisions, create an ADR following the template in `0000-template.md`. Number sequentially (`0001-`, `0002-`, etc.).
+- **`docs/designs/`**: Use for pre-implementation design thinking. These are working documents, not permanent records.
+- **`docs/ubiquitous-language.md`**: Ships with the convention for maintaining a project glossary. When the project develops its own load-bearing design vocabulary (three or four terms encoding design rules, or terms that start being defined inconsistently across files), append entries to the **Glossary** section at the bottom of the same file. Brief in-place mentions elsewhere link to it; the Glossary owns the definition. `copier update` refreshes the convention half while preserving your entries.
+{% if enable_github_pm %}
+
+## Working with Issues
+
+This project uses GitHub Projects for work tracking. See [`docs/project-management.md`](docs/project-management.md) for full details on issue types, labels, and the idea capture workflow.
+
+### Issue Lifecycle
+
+When picking up an issue:
+
+1. Read issue `#N` and understand the acceptance criteria
+2. Set Status to **In Progress** on the Project board
+3. Create a feature branch using conventional naming (`feat/`, `fix/`, etc.)
+4. Work in atomic conventional commits
+5. Push and open a PR with `Fixes #N` in the PR description
+6. GitHub auto-links the PR to `#N` and the Project workflow sets Status to **In Review**
+7. After review, approval, and merge, GitHub closes `#N` and sets Status to **Done**
+
+### Label System
+
+- **Kind labels** (`kind:epic`, `kind:slice`, `kind:spike`, `kind:idea`, `kind:bug`): classify the type of work. `kind:spike` is time-boxed research; success is knowledge gained, not value shipped.
+- **Horizon labels** (`horizon:now`, `horizon:next`, `horizon:later`): used alongside `kind:idea` to indicate maturity
+- **Priority labels** (`priority:p0` through `priority:p3`): triage urgency
+
+When creating issues, use the issue templates. They auto-apply the correct kind label.
+{% endif %}
+
+## Growing Beyond
+{% if not full_stack %}
+
+- **Adding a Vue 3 frontend:** Run `copier update --trust` and set `full_stack=true`. This restructures the project into an Nx monorepo with Vue 3 + FastAPI.
+{% endif %}
+{% if not enable_github_pm %}
+- **Adding GitHub Project Management:** Run `copier update --trust` and set `enable_github_pm=true`. This adds issue templates, PR template, labels, and a Project board bootstrap script.
+{% endif %}
+- **Deploying to production:** See [`docs/productionalize.md`](docs/productionalize.md) for Docker builds, CI, health endpoints, environment management, and serving strategy.

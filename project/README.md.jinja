@@ -31,7 +31,19 @@ uv run pre-commit install
 ```
 {% endif %}
 
-Then enable release-please: go to **Settings → Actions → General → Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**.
+Then enable release-please: go to **Settings > Actions > General > Workflow permissions** and check **Allow GitHub Actions to create and approve pull requests**.
+{% if enable_github_pm %}
+
+### Project Management Setup
+
+After pushing to GitHub, run the bootstrap script to set up your Project board, labels, and custom fields:
+
+```bash
+./scripts/bootstrap-pm.sh
+```
+
+See [`docs/project-management.md`](docs/project-management.md) for how to work with issues, the label system, and the idea capture workflow.
+{% endif %}
 
 ## Development
 
@@ -55,6 +67,20 @@ Then enable release-please: go to **Settings → Actions → General → Workflo
 | Format | `uv run ruff format src/ tests/` |
 | Type check | `uv run ty check src/ tests/` |
 {% endif %}
+
+## What's Next
+
+This project was scaffolded with [Kindling](https://github.com/niklastypes/kindling). As it grows, you can add more capabilities via `copier update --trust`:
+{% if not full_stack %}
+
+- **Vue 3 + FastAPI frontend:** Set `full_stack=true` to restructure into an Nx monorepo with a wired-up frontend and backend.
+{% endif %}
+{% if not enable_github_pm %}
+- **GitHub Project Management:** Set `enable_github_pm=true` to add issue templates, a PR template, labels, and a Project board bootstrap script.
+{% endif %}
+- **Going to production:** See [`docs/productionalize.md`](docs/productionalize.md) for Docker, CI, health endpoints, and deploy strategy.
+
+See `CLAUDE.md` for coding agent instructions and project conventions.
 
 ## License
 

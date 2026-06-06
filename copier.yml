@@ -19,14 +19,25 @@ _exclude:
   - "{% if full_stack %}/pyproject.toml{% endif %}"
   - "{% if full_stack %}/.python-version{% endif %}"
   - "{% if full_stack %}/.env.example{% endif %}"
+  # Docs: only generate feature-specific guides when opted in
+  - "{% if not full_stack %}/docs/full-stack.md{% endif %}"
+  # GitHub PM: exclude PM files when not enabled
+  - "{% if not enable_github_pm %}/scripts/{% endif %}"
+  - "{% if not enable_github_pm %}/docs/project-management.md{% endif %}"
+  - "{% if not enable_github_pm %}/.github/ISSUE_TEMPLATE/{% endif %}"
+  - "{% if not enable_github_pm %}/.github/pull_request_template.md{% endif %}"
 
 _skip_if_exists:
   - AGENTS.md
+  - CLAUDE.md
   - README.md
   - LICENSE
   - .gitignore
   - docs/full-stack.md
   - docs/productionalize.md
+  - docs/architecture.md
+  - docs/decisions/0000-template.md
+  - docs/project-management.md
 
 # --- Questions ---
 
@@ -67,6 +78,11 @@ python_version:
 full_stack:
   type: bool
   help: "Scaffold a full-stack app (Vue 3 + FastAPI + Nx monorepo)?"
+  default: false
+
+enable_github_pm:
+  type: bool
+  help: "Set up GitHub Project Management (Project board, issue templates, labels)?"
   default: false
 
 # --- Tasks ---
