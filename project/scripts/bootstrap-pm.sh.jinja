@@ -50,8 +50,24 @@ if ! command -v gh &> /dev/null; then
     fail "gh CLI not found. Install it: https://cli.github.com/"
 fi
 
-if ! gh auth status &> /dev/null; then
-    fail "gh CLI not authenticated. Run: gh auth login"
+# Use a real API call instead of `gh auth status`: status checks ALL configured
+# accounts and exits non-zero if any inactive account has a stale token, even
+# when the active account works fine.
+if ! gh api user --silent &> /dev/null; then
+    echo ""
+    echo "Active GitHub account is not authenticated. Diagnostic:"
+    gh auth status || true
+    echo ""
+    fail "Run: gh auth login"
+fi
+
+# 'project' scope is required to create and manage GitHub Projects v2.
+# Pre-flight the check so we fail fast with a clear remediation step.
+SCOPES=$(gh api user -i 2>/dev/null | grep -i "^X-Oauth-Scopes:" | sed 's/^[Xx]-[Oo]auth-[Ss]copes: *//' | tr -d '\r')
+if ! echo "${SCOPES}" | grep -wq "project"; then
+    echo ""
+    echo "Current token scopes: ${SCOPES}"
+    fail "GitHub token missing 'project' scope (needed for GitHub Projects v2). Run: gh auth refresh -s project"
 fi
 
 # Verify the repo exists on GitHub
@@ -59,7 +75,7 @@ if ! gh repo view "${REPO}" &> /dev/null; then
     fail "Repository ${REPO} not found on GitHub. Push your repo first."
 fi
 
-info "Prerequisites satisfied"
+info "Prerequisites satisfied (active account authenticated, project scope present, repo exists)"
 
 # =============================================================================
 # Labels
