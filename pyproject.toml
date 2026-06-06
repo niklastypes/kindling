@@ -1,6 +1,6 @@
 [project]
 name = "kindling"
-version = "0.6.0"
+version = "0.7.0"
 description = "🪵 Copier template for bootstrapping opinionated Python projects"
 requires-python = ">=3.13"
 dependencies = []

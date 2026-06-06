@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.7.0](https://github.com/niklastypes/kindling/compare/v0.6.0...v0.7.0) (2026-06-06)
+
+
+### Features
+
+* add architecture.md, ADR template, and designs directory ([485a170](https://github.com/niklastypes/kindling/commit/485a170d4ce14e8b9e58f05eb25f3898aa61bc65))
+* add enable_github_pm question and exclude rules ([2ff3066](https://github.com/niklastypes/kindling/commit/2ff306640580b13c3dd5d5a42d5a36b8fbcf4072))
+* add GitHub issue form templates (epic, slice, idea, bug) ([4f96bc1](https://github.com/niklastypes/kindling/commit/4f96bc1adc4cb46e997d291b5e1d484bdc9c3380))
+* add kind:spike for time-boxed research tasks ([7f2b371](https://github.com/niklastypes/kindling/commit/7f2b371fa822688f175ecf9e5befc1fa9da2d884))
+* add PR template and GitHub PM bootstrap script ([d49a295](https://github.com/niklastypes/kindling/commit/d49a2951ae6b8c1b2063a5440a98f66f4bc15d54))
+* add project management guide ([0a8bac6](https://github.com/niklastypes/kindling/commit/0a8bac62902727b0dbc6ba43fce162b36c13e5ec))
+* GitHub PM integration + docs restructuring ([4453c87](https://github.com/niklastypes/kindling/commit/4453c87de1c2628eea6baccb2ec71dbe51ef9b23))
+* migrate agent instructions from AGENTS.md to CLAUDE.md ([cc25360](https://github.com/niklastypes/kindling/commit/cc25360dadb7ac991f317d515b44203692ef7f0a))
+* same-file model for ubiquitous-language with preserved glossary ([117a830](https://github.com/niklastypes/kindling/commit/117a830630bbd89ba0b74c63428a653e48277ea3))
+* same-file model for ubiquitous-language with preserved glossary ([7c025a1](https://github.com/niklastypes/kindling/commit/7c025a199caa47cfdb57e6278f552f90fe273590))
+
+
+### Documentation
+
+* add ubiquitous-language convention as evolution guide ([05ba40d](https://github.com/niklastypes/kindling/commit/05ba40d0d3d8dbfebba3fec35c0bbb9e1189deaf))
+* add What's Next section to generated README ([c4b9b54](https://github.com/niklastypes/kindling/commit/c4b9b5475f9747722d4ad11f05cf280e4152cb32))
+* explain notes/ vs docs/ split in CLAUDE.md ([9ead0d2](https://github.com/niklastypes/kindling/commit/9ead0d22f7961cec8e90765e0f32191356994b6e))
+* map staged roadmap to milestones, lock user-story framing to epics ([c5f3ab0](https://github.com/niklastypes/kindling/commit/c5f3ab06c6abb194de0c0a640add97a9fd9497ce))
+* replace Momo example with generic web-app example ([0b44657](https://github.com/niklastypes/kindling/commit/0b446573243b91ec829957f1268458de3e44a6c7))
+* ubiquitous language convention ([712ad98](https://github.com/niklastypes/kindling/commit/712ad98dde0c3cd84b339cb6bb8517334af88142))
+* update CLAUDE.md UL bullet to same-file model ([accd092](https://github.com/niklastypes/kindling/commit/accd092fea787b7808250027a62d948fc9c128ca))
+* update READMEs with GitHub PM setup instructions ([67c32e0](https://github.com/niklastypes/kindling/commit/67c32e0a0659be9f7b2e4fd9973f5b05360a4200))
+* wire vision/roadmap to GitHub PM bidirectionally ([0ec2cec](https://github.com/niklastypes/kindling/commit/0ec2cecd96e03360e39b296a6dc64a51d5ffc841))
+
 ## [0.6.0](https://github.com/niklastypes/kindling/compare/v0.5.2...v0.6.0) (2026-06-01)
 
 
