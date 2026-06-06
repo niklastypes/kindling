@@ -79,7 +79,14 @@ docs/                          # Architecture, decisions, and guides
 
 ## Documentation
 
-Keep project documentation up to date as the codebase evolves:
+Two folders for project documentation, with distinct purposes:
+
+- **`notes/`** holds **in-flux thinking**: vision, roadmap, brainstorms, design exploration, research. Anything not yet built. Version-controlled (so it's never lost) but understood to be evolving. Notes graduate into proper docs as they're implemented.
+- **`docs/`** holds **as-built documentation**: architecture, decisions, guides, API references. If it describes shipped behavior, it lives here.
+
+When in doubt: if it would mislead a reader who treated it as "how the system works today," it belongs in `notes/`, not `docs/`.
+
+Keep both up to date as the codebase evolves:
 
 - **`docs/architecture.md`**: Update when making architectural changes. This is the high-level map of the system.
 - **`docs/decisions/`**: When making significant architectural decisions, create an ADR following the template in `0000-template.md`. Number sequentially (`0001-`, `0002-`, etc.).
