@@ -82,6 +82,41 @@ _tasks:
     git add . &&
     git commit -m 'feat: initial commit kindled with 🪵 Kindling' &&
     git tag v0.1.0 || true
+  # Preserve the user's Glossary entries when re-running `copier update`.
+  # No-op on initial copy (git HEAD has no prior version of the file).
+  - |
+    {% raw %}python3 - << 'PYEOF'
+    import re
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    FILE = Path("docs/ubiquitous-language.md")
+    BEGIN = "<!-- KINDLING:GLOSSARY:BEGIN -->"
+    END = "<!-- KINDLING:GLOSSARY:END -->"
+
+    if not FILE.exists():
+        sys.exit(0)
+
+    try:
+        old = subprocess.run(
+            ["git", "show", f"HEAD:{FILE}"],
+            capture_output=True, text=True, check=True,
+        ).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        sys.exit(0)
+
+    pattern = re.compile(re.escape(BEGIN) + r"(.*?)" + re.escape(END), re.DOTALL)
+    old_match = pattern.search(old)
+    new = FILE.read_text()
+    new_match = pattern.search(new)
+
+    if not old_match or not new_match:
+        sys.exit(0)
+
+    merged = new[:new_match.start()] + old_match.group(0) + new[new_match.end():]
+    FILE.write_text(merged)
+    PYEOF{% endraw %}
 
 # --- Computed (not shown to user) ---
 

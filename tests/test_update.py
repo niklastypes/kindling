@@ -68,3 +68,10 @@ def test_update_from_v0_1_0(tmp_path: Path) -> None:
 
     # AGENTS.md should not have been overwritten
     assert (project / "AGENTS.md").read_text() == "my custom content"
+
+    # Ubiquitous-language guide shipped with the BEGIN/END markers so
+    # `copier update` can splice the user's Glossary entries back in.
+    ul = (project / "docs" / "ubiquitous-language.md").read_text()
+    assert "<!-- KINDLING:GLOSSARY:BEGIN -->" in ul
+    assert "<!-- KINDLING:GLOSSARY:END -->" in ul
+    assert "## Glossary" in ul
