@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import re
+import shutil
+import subprocess
 from pathlib import Path
+
+import pytest
 
 
 def test_pm_key_files_exist(generated_pm: Path) -> None:
@@ -77,3 +81,19 @@ def test_pm_no_jinja_artifacts(generated_pm: Path) -> None:
         content = path.read_text()
         assert not jinja_var.search(content), f"Unrendered Jinja in {path}"
         assert "{%" not in content, f"Unrendered Jinja tag in {path}"
+
+
+def test_pm_bootstrap_script_passes_shellcheck(generated_pm: Path) -> None:
+    """The rendered bootstrap script passes ShellCheck cleanly."""
+    if shutil.which("shellcheck") is None:
+        pytest.skip("shellcheck not installed (available on ubuntu-latest CI runners)")
+
+    script = generated_pm / "scripts" / "bootstrap-pm.sh"
+    result = subprocess.run(
+        ["shellcheck", str(script)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, (
+        f"shellcheck reported issues in {script}:\n{result.stdout}\n{result.stderr}"
+    )

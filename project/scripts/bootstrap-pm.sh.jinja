@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+# ShellCheck suppressions (justified):
+#   SC2034 - the *_LABELS and *_DESCRIPTIONS associative arrays are read via
+#            `local -n` namerefs inside create_labels(); ShellCheck can't
+#            statically follow indirection so it sees them as unused.
+#   SC2016 - the `gh api graphql -f query='...'` calls are single-quoted on
+#            purpose: the $variables inside are GraphQL variables, not shell
+#            expansions.
+#   SC2015 - the `cmd && info || warn` patterns use the fallback only as a
+#            non-critical log message; not branched logic.
+# shellcheck disable=SC2034,SC2016,SC2015
 set -euo pipefail
 
 # =============================================================================
