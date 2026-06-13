@@ -45,37 +45,47 @@ def git(args: list[str], cwd: Path) -> None:
     )
 
 
-@pytest.fixture
-def generated(tmp_path: Path) -> Path:
+# The generated* fixtures are session-scoped: copier.run_copy (with unsafe=True)
+# runs git init + uv sync per generation, plus pnpm install for full-stack, so
+# regenerating per test is expensive. Contract: consumers must treat the
+# generated project as READ-ONLY. A test that needs to mutate the project (e.g.
+# the copier update tests) must create its own copy via run_copy directly.
+
+
+@pytest.fixture(scope="session")
+def generated(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    dest = tmp_path_factory.mktemp("generated") / "test-project"
     copier.run_copy(
         str(TEMPLATE_ROOT),
-        tmp_path / "test-project",
+        dest,
         data=DEFAULT_DATA,
         unsafe=True,
         vcs_ref="HEAD",
     )
-    return tmp_path / "test-project"
+    return dest
 
 
-@pytest.fixture
-def generated_full_stack(tmp_path: Path) -> Path:
+@pytest.fixture(scope="session")
+def generated_full_stack(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    dest = tmp_path_factory.mktemp("generated_full_stack") / "test-project"
     copier.run_copy(
         str(TEMPLATE_ROOT),
-        tmp_path / "test-project",
+        dest,
         data=FULL_STACK_DATA,
         unsafe=True,
         vcs_ref="HEAD",
     )
-    return tmp_path / "test-project"
+    return dest
 
 
-@pytest.fixture
-def generated_pm(tmp_path: Path) -> Path:
+@pytest.fixture(scope="session")
+def generated_pm(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    dest = tmp_path_factory.mktemp("generated_pm") / "test-project"
     copier.run_copy(
         str(TEMPLATE_ROOT),
-        tmp_path / "test-project",
+        dest,
         data=PM_DATA,
         unsafe=True,
         vcs_ref="HEAD",
     )
-    return tmp_path / "test-project"
+    return dest
