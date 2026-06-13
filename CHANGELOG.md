@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/niklastypes/kindling/compare/v0.7.2...v0.7.3) (2026-06-13)
+
+
+### Documentation
+
+* add PM E2E test instructions ([ce78d4d](https://github.com/niklastypes/kindling/commit/ce78d4d51bd2ac494c93cc25ee9d7be52603bb50))
+
 ## [0.7.2](https://github.com/niklastypes/kindling/compare/v0.7.1...v0.7.2) (2026-06-06)
 
 
