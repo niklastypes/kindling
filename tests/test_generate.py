@@ -161,6 +161,11 @@ def test_python_only_gitignore_no_node_entries(generated: Path) -> None:
     assert "node_modules" not in content
 
 
+def test_gitignore_excludes_claude_local_settings(generated: Path) -> None:
+    content = (generated / ".gitignore").read_text()
+    assert ".claude/settings.local.json" in content
+
+
 def test_python_only_pre_commit_no_directory_flag(generated: Path) -> None:
     content = (generated / ".pre-commit-config.yaml").read_text()
     assert "--directory" not in content
