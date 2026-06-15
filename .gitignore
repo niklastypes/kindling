@@ -29,3 +29,6 @@ htmlcov/
 
 # Mac
 .DS_Store
+
+# Claude Code (machine-local)
+.claude/settings.local.json
