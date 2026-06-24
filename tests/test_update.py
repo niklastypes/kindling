@@ -104,6 +104,52 @@ def test_update_from_v0_1_0_gains_new_docs(tmp_path: Path) -> None:
     assert (project / "docs" / "designs" / ".gitkeep").exists()
 
 
+def test_update_gitignore_propagates_and_preserves(tmp_path: Path) -> None:
+    """.gitignore is merged (not frozen) on update: new template ignores land
+    while user-added lines survive."""
+    copier.run_copy(
+        str(TEMPLATE_ROOT),
+        tmp_path / "test-project",
+        data={
+            "project_name": "test-project",
+            "project_description": "A test project",
+            "author_name": "Test Author",
+            "python_version": "3.13",
+        },
+        vcs_ref="v0.1.0",
+        unsafe=True,
+    )
+    project = tmp_path / "test-project"
+
+    # v0.1.0 predates the .claude/settings.local.json ignore.
+    assert ".claude/settings.local.json" not in (project / ".gitignore").read_text()
+
+    git(["init"], project)
+    git(["add", "."], project)
+    git(["commit", "-m", "init"], project)
+
+    # User appends a project-specific ignore and commits.
+    gitignore = project / ".gitignore"
+    gitignore.write_text(gitignore.read_text() + "\n# Custom\nlocal-scratch/\n")
+    git(["add", "."], project)
+    git(["commit", "-m", "customize-gitignore"], project)
+
+    copier.run_update(
+        str(project),
+        data={"github_username": "test-user"},
+        vcs_ref="HEAD",
+        unsafe=True,
+        defaults=True,
+        overwrite=True,
+    )
+
+    merged = (project / ".gitignore").read_text()
+    # New template ignore propagated...
+    assert ".claude/settings.local.json" in merged
+    # ...and the user's line survived the merge.
+    assert "local-scratch/" in merged
+
+
 def test_update_skip_if_exists_protects_claude_md(tmp_path: Path) -> None:
     """CLAUDE.md is not overwritten on copier update if user customized it."""
     copier.run_copy(

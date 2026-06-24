@@ -32,7 +32,11 @@ _skip_if_exists:
   - CLAUDE.md
   - README.md
   - LICENSE
-  - .gitignore
+  # NOTE: .gitignore is deliberately NOT skipped. It's append-mostly (standard
+  # ignores plus conditional node_modules/.nx for full_stack), so copier's
+  # 3-way merge on update both propagates new template ignores AND preserves
+  # user-added lines. Freezing it (skip_if_exists) stranded existing projects
+  # without later additions and broke the full_stack upgrade path.
   - docs/full-stack.md
   - docs/productionalize.md
   - docs/architecture.md
