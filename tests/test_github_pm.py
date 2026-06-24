@@ -11,6 +11,7 @@ import pytest
 
 
 def test_pm_key_files_exist(generated_pm: Path) -> None:
+    assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "stage.yml").exists()
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "epic.yml").exists()
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "slice.yml").exists()
     assert (generated_pm / ".github" / "ISSUE_TEMPLATE" / "spike.yml").exists()
@@ -32,6 +33,18 @@ def test_pm_spike_template_has_required_fields(generated_pm: Path) -> None:
 def test_pm_bootstrap_script_seeds_spike_label(generated_pm: Path) -> None:
     content = (generated_pm / "scripts" / "bootstrap-pm.sh").read_text()
     assert "kind:spike|#5319e7|Time-boxed research" in content
+
+
+def test_pm_bootstrap_script_seeds_stage_label(generated_pm: Path) -> None:
+    content = (generated_pm / "scripts" / "bootstrap-pm.sh").read_text()
+    assert "kind:stage|" in content
+
+
+def test_pm_stage_template_has_required_fields(generated_pm: Path) -> None:
+    content = (generated_pm / ".github" / "ISSUE_TEMPLATE" / "stage.yml").read_text()
+    assert "kind:stage" in content
+    assert "Stage definition" in content
+    assert "Milestone" in content
 
 
 def test_pm_claude_md_has_lifecycle(generated_pm: Path) -> None:

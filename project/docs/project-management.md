@@ -9,22 +9,37 @@ This project uses GitHub Projects v2 for work tracking, with issue templates and
 `./scripts/bootstrap-pm.sh` seeds the project, labels, and date fields automatically. The following steps live in the GitHub UI (the supported path for these operations — GitHub's Projects v2 API doesn't currently expose them cleanly):
 
 1. **Add Status options `In Review` and `Blocked`.**
-   Project menu (`⋯`) → Settings → Fields → Status → Edit → add the two options. The workflow lifecycle below references both.
-2. **Create the views you want** (e.g., Board, Roadmap, Table).
-   Click `+` next to the view tabs → New view → pick a layout.
+   Project menu (`⋯`) → Settings → **Custom fields** (left sidebar) → Status → Edit → add the two options. The workflow lifecycle below references both.
+2. **Create your views, and save each one.** New views aren't persisted until you save them (`⋯` on the view tab → Save, or the "Save" prompt).
+   - Rename the default view to **Table**.
+   - Add a **Kanban** view (Board layout, grouped by Status).
+   - Add a **Roadmap** view (Roadmap layout) for the timeline.
+
+   Click `+` next to the view tabs → New view → pick a layout → Save.
 3. **Enable built-in workflows.**
    Project Settings → Workflows. Turn on:
-   - Auto-add new issues to project
-   - Auto-set Status to `Todo` on new issues
-   - Auto-move to `In Review` when a linked PR opens
-   - Auto-move to `Done` when issue is closed
-4. **If you created a Roadmap view**, set `Start date` and `Target date` as the date sources in the view's settings.
+   - **Auto-add sub-issues to project** (usually on by default) — pulls sub-issues onto the board.
+   - **Auto-add to project** — enable it and set the filter to `is:issue` so new issues land on the board automatically. **Enable this before creating issues:** it only catches issues opened *after* it's turned on, so any pre-existing issues have to be added by hand once.
+   - **Item added to project** (usually on by default) — sets Status to `Todo` when an item is added.
+   - **Pull request linked to issue** — set Status to `In Review`. (Linking happens automatically when a PR says `Fixes #N`.)
+   - **Item closed** — set Status to `Done`.
+4. **Roadmap and milestones.**
+   - In the Roadmap view's settings, set `Start date` and `Target date` as the date sources.
+   - Milestones don't render on the Roadmap. To *see* a milestone, add the built-in **Milestone** field as a column in a Table view (`+` in the field header → Milestone). For timeline bars, use `kind:stage` issues with dates (see [Stage](#stage-kindstage) below and the staged-roadmap mapping).
 
 These steps are also printed in the script's summary output, so a re-run reminds you. The doc here is the durable record for anyone reading project-management.md without having just run the script.
 
 ---
 
 ## Issue Types
+
+### Stage (`kind:stage`)
+
+A milestone-sized stage tracker, for projects with a staged roadmap (Henrik Kniberg's vehicle metaphor: Skateboard, Bicycle, Car, ...). One stage corresponds to one GitHub milestone; the issue is the *narrative* ("what does the product look like when this stage is done?") while the milestone is the *container* for the work.
+
+**Example:** "🚲 Bicycle — the product is daily-usable: users can sign up, publish, and read a feed."
+
+Stage issues carry `Start date` / `Target date` on the Project board so they render as bars on the Roadmap view (bare milestones don't render there; dated issues do). Skip this issue type entirely if your project doesn't use a staged roadmap. See [Mapping a staged roadmap to GitHub PM](#mapping-a-staged-roadmap-to-github-pm) for the full picture.
 
 ### Epic (`kind:epic`)
 
@@ -164,7 +179,7 @@ Note the last slice in the first epic ("Database migration for the users table")
 
 **Useful constraint:** an epic must fit inside a single milestone. The moment you try to assign an epic that spans two milestones, the mismatch surfaces and forces you to split it (or rethink the stage boundaries). The same goes for slices vs. epics: a slice that doesn't fit in one PR probably wants to be its own epic with multiple slices.
 
-**Optional `kind:stage` label.** If you want each stage represented as a tracked issue (for narrative purposes — "what does the product look like when this stage is done?"), add a `kind:stage` label. The stage issue is documentation about the milestone, not a work item itself.
+**The `kind:stage` label and Stage template.** The bootstrap script seeds a `kind:stage` label and ships a [Stage issue template](#stage-kindstage), so each stage can be a tracked issue (for narrative purposes — "what does the product look like when this stage is done?"). The stage issue is documentation about the milestone, not a work item itself. Give it `Start date` / `Target date` on the board to drive the Roadmap timeline.
 
 ### Wiring vision to GitHub PM
 
