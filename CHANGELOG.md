@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.8.0](https://github.com/niklastypes/kindling/compare/v0.7.2...v0.8.0) (2026-06-26)
+
+
+### Features
+
+* correct setup guidance and add stage tracking ([6d1dffa](https://github.com/niklastypes/kindling/commit/6d1dffa07e7e449ab3b6dd68c130e199a45c912e))
+
+
+### Bug Fixes
+
+* stop freezing .gitignore on copier update ([8943ead](https://github.com/niklastypes/kindling/commit/8943eadfdfacb0ed72491244b8b42d24df3d69c8))
+
+
+### Documentation
+
+* add PM E2E test instructions ([ce78d4d](https://github.com/niklastypes/kindling/commit/ce78d4d51bd2ac494c93cc25ee9d7be52603bb50))
+
 ## [0.7.2](https://github.com/niklastypes/kindling/compare/v0.7.1...v0.7.2) (2026-06-06)
 
 
