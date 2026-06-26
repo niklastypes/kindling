@@ -67,6 +67,7 @@ echo "=== Seeding labels ==="
 # but bash's `set -u` mis-parses the colon as a parameter-expansion modifier
 # and aborts with `kind: unbound variable` before the loop even runs.)
 LABELS=(
+    "kind:stage|#006b75|Milestone-sized stage tracker; drives the Roadmap timeline"
     "kind:epic|#6f42c1|Release cluster, groups related slices"
     "kind:slice|#0075ca|Atomic vertical slice of work"
     "kind:spike|#5319e7|Time-boxed research; success is knowledge gained"
@@ -153,8 +154,8 @@ gh project link "${PROJECT_NUMBER}" --owner "${OWNER}" --repo "${REPO}" 2>/dev/n
 # `UpdateProjectV2FieldInput.singleSelectField`, so the mutation now fails
 # with "argumentNotAccepted". The workaround (replacing the full options
 # list) is not idempotency-safe and would rotate IDs of items already
-# assigned. Cleaner to do it in the UI (Settings -> Fields -> Status ->
-# Edit) and surface it as a manual step in the summary below.
+# assigned. Cleaner to do it in the UI (Settings -> Custom fields ->
+# Status -> Edit) and surface it as a manual step in the summary below.
 
 echo ""
 echo "=== Creating custom date fields ==="
@@ -212,21 +213,30 @@ echo "  GitHub PM Bootstrap Complete"
 echo "=========================================="
 echo ""
 echo "  Project: ${PROJECT_NAME} (#${PROJECT_NUMBER})"
-echo "  URL:     https://github.com/orgs/${OWNER}/projects/${PROJECT_NUMBER}"
-echo "           (or https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER})"
+echo "  URL:     https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER}"
+echo "           (org accounts: https://github.com/orgs/${OWNER}/projects/${PROJECT_NUMBER})"
 echo ""
 echo "  Manual steps remaining (the GitHub UI is the supported path for these):"
 echo "  1. Add Status options 'In Review' and 'Blocked':"
-echo "       Project menu (⋯) -> Settings -> Fields -> Status -> Edit"
-echo "  2. Create the views you want (e.g. Board, Roadmap, Table):"
-echo "       Click + next to the view tabs -> New view"
+echo "       Project menu (⋯) -> Settings -> Custom fields (left sidebar) -> Status -> Edit"
+echo "  2. Create your views, and SAVE each one (new views aren't saved by default):"
+echo "       - Rename the default view to 'Table'"
+echo "       - Add a 'Kanban' view (Board layout, grouped by Status)"
+echo "       - Add a 'Roadmap' view (Roadmap layout) for the timeline"
+echo "       Click + next to the view tabs -> New view -> pick a layout -> Save"
 echo "  3. Enable built-in workflows in Project Settings -> Workflows:"
-echo "     - Auto-add new issues to project"
-echo "     - Auto-set Status to 'Todo' on new issues"
-echo "     - Auto-move to 'In Review' when a linked PR opens"
-echo "     - Auto-move to 'Done' when issue is closed"
-echo "  4. If you created a Roadmap view, set Start date and Target date"
-echo "     as the date sources."
+echo "     - Auto-add sub-issues to project        (usually on by default)"
+echo "     - Auto-add to project                   (enable + filter 'is:issue')"
+echo "     - Item added to project                 -> sets Status to 'Todo' (on by default)"
+echo "     - Pull request linked to issue          -> set Status to 'In Review'"
+echo "     - Item closed                           -> set Status to 'Done'"
+echo "     NOTE: enable 'Auto-add to project' BEFORE creating issues; it only"
+echo "           catches issues opened afterward. Add pre-existing issues once, by hand."
+echo "  4. Roadmap & milestones:"
+echo "     - In the Roadmap view, set 'Start date' and 'Target date' as the date sources."
+echo "     - Milestones don't render on Roadmap; add the built-in 'Milestone' field as a"
+echo "       column in a Table view to see them, and use kind:stage issues (with dates)"
+echo "       for the timeline bars."
 echo ""
 echo "  See docs/project-management.md for usage guide."
 echo "=========================================="

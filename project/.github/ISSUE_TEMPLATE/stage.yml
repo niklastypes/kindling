@@ -1,0 +1,47 @@
+name: Stage
+description: A milestone-sized stage tracker that drives the Roadmap timeline
+title: "[Stage] "
+labels: ["kind:stage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A stage is a milestone-sized deliverable (Henrik Kniberg's vehicle metaphor:
+        Skateboard, Bicycle, Car, ...). This issue is the narrative tracker for one
+        milestone: what the product looks like when the stage is done.
+
+        Give it `Start date` / `Target date` on the Project board so it renders as a
+        bar on the Roadmap view. Bare milestones don't render there; dated issues do.
+
+  - type: textarea
+    id: definition
+    attributes:
+      label: Stage definition
+      description: What does the product look and feel like when this stage is done? Who can do what?
+    validations:
+      required: true
+
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone
+      description: The GitHub milestone this stage corresponds to (one stage = one milestone).
+      placeholder: "e.g. 🚲 Bicycle"
+
+  - type: textarea
+    id: epics
+    attributes:
+      label: Epics in this stage
+      description: The release clusters that make up this stage. Each epic must fit inside this one milestone.
+      placeholder: |
+        - [ ] #N - Epic description
+        - [ ] #N - Epic description
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance summary
+      description: How do we know the stage is shippable?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
