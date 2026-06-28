@@ -100,6 +100,16 @@ This project uses GitHub Projects for work tracking. See [`docs/project-manageme
 
 If `notes/` still holds unstructured design material, run the **`/forge`** skill to structure it into `docs/` (architecture, ADRs, slim roadmap) and GitHub Project items (milestones, epics, slices, ideas). It's interactive and re-runnable, run it again to slice the next milestones into detail as earlier work ships.
 
+### Getting oriented
+
+A cold agent should read, in order: `README.md` (what this is) → [`docs/architecture.md`](docs/architecture.md) (how it works) → [`docs/roadmap.md`](docs/roadmap.md) (where it's headed; the **near milestone is the current focus**) → the GitHub Project board (or `gh issue list`) for what's actionable. `docs/roadmap.md` appears once `/forge` has run.
+
+### Finding the next issue
+
+1. List the active milestone's open issues: `gh issue list --milestone "<name>" --state open`.
+2. Pick one with **no open blockers** — check "Blocked by" via `gh api repos/{{github_username}}/{{project_name}}/issues/<N>/dependencies/blocked_by`. Prefer slices that unblock the most downstream work.
+3. Then follow the Issue Lifecycle below.
+
 ### Issue Lifecycle
 
 When picking up an issue:
