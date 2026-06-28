@@ -26,6 +26,7 @@ _exclude:
   - "{% if not enable_github_pm %}/docs/project-management.md{% endif %}"
   - "{% if not enable_github_pm %}/.github/ISSUE_TEMPLATE/{% endif %}"
   - "{% if not enable_github_pm %}/.github/pull_request_template.md{% endif %}"
+  - "{% if not enable_github_pm %}/.claude/skills/forge/{% endif %}"
 
 _skip_if_exists:
   - AGENTS.md

@@ -42,7 +42,9 @@ After pushing to GitHub, run the bootstrap script to set up your Project board, 
 ./scripts/bootstrap-pm.sh
 ```
 
-The script prints a 4-step **manual-setup checklist** at the end (Status options, views, workflow automations — operations the GitHub UI handles more cleanly than the API). See [`docs/project-management.md`](docs/project-management.md#initial-setup-after-bootstrap) for the durable version of that checklist, plus how to work with issues, the label system, and the idea capture workflow.
+The script prints a **manual-setup checklist** at the end (Status options, views, workflow automations — operations the GitHub UI handles more cleanly than the API). See [`docs/project-management.md`](docs/project-management.md#initial-setup-after-bootstrap) for the durable version of that checklist, plus how to work with issues, the label system, and the idea capture workflow.
+
+Once the board exists, run the **`/forge`** skill (in `.claude/skills/forge/`) to structure your `notes/` design nucleus into `docs/` (architecture, ADRs, a slim roadmap) and GitHub Project items (milestones, epics, slices, ideas). It's a source-informed interactive dialogue, and you re-run it later to slice the next milestones into detail.
 {% endif %}
 
 ## Development
