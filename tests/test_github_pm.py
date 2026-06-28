@@ -27,6 +27,8 @@ def test_pm_forge_skill_has_frontmatter(generated_pm: Path) -> None:
     content = (generated_pm / ".claude" / "skills" / "forge" / "SKILL.md").read_text()
     assert "name: forge" in content
     assert "AskUserQuestion" in content
+    assert "tracer bullet" in content
+    assert "blocked_by" in content
 
 
 def test_forge_skill_absent_without_pm(generated: Path) -> None:
@@ -59,6 +61,12 @@ def test_pm_stage_template_has_required_fields(generated_pm: Path) -> None:
     assert "Milestone" in content
 
 
+def test_pm_slice_template_has_implementation(generated_pm: Path) -> None:
+    content = (generated_pm / ".github" / "ISSUE_TEMPLATE" / "slice.yml").read_text()
+    assert "Implementation" in content
+    assert "Blocked by" in content
+
+
 def test_pm_claude_md_has_lifecycle(generated_pm: Path) -> None:
     content = (generated_pm / "CLAUDE.md").read_text()
     assert "Issue Lifecycle" in content
@@ -66,6 +74,9 @@ def test_pm_claude_md_has_lifecycle(generated_pm: Path) -> None:
     assert "Fixes #N" in content
     assert "project-management.md" in content
     assert "Label System" in content
+    assert "Getting oriented" in content
+    assert "Finding the next issue" in content
+    assert "blocked_by" in content
 
 
 def test_pm_bootstrap_script_rendered(generated_pm: Path) -> None:
