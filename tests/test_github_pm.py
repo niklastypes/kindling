@@ -20,6 +20,18 @@ def test_pm_key_files_exist(generated_pm: Path) -> None:
     assert (generated_pm / ".github" / "pull_request_template.md").exists()
     assert (generated_pm / "scripts" / "bootstrap-pm.sh").exists()
     assert (generated_pm / "docs" / "project-management.md").exists()
+    assert (generated_pm / ".claude" / "skills" / "forge" / "SKILL.md").exists()
+
+
+def test_pm_forge_skill_has_frontmatter(generated_pm: Path) -> None:
+    content = (generated_pm / ".claude" / "skills" / "forge" / "SKILL.md").read_text()
+    assert "name: forge" in content
+    assert "AskUserQuestion" in content
+
+
+def test_forge_skill_absent_without_pm(generated: Path) -> None:
+    # copier may leave an empty parent dir behind, so assert on the file.
+    assert not (generated / ".claude" / "skills" / "forge" / "SKILL.md").exists()
 
 
 def test_pm_spike_template_has_required_fields(generated_pm: Path) -> None:

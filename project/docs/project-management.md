@@ -35,7 +35,7 @@ These steps are also printed in the script's summary output, so a re-run reminds
 
 ### Stage (`kind:stage`)
 
-A milestone-sized stage tracker, for projects with a staged roadmap (Henrik Kniberg's vehicle metaphor: Skateboard, Bicycle, Car, ...). One stage corresponds to one GitHub milestone; the issue is the *narrative* ("what does the product look like when this stage is done?") while the milestone is the *container* for the work.
+An optional narrative tracker for a roadmap stage (Henrik Kniberg's vehicle metaphor: Skateboard, Bicycle, Car, ...). The stage itself is a *thinking tool for sequencing*, not a GitHub object, it lives in `docs/roadmap.md`. A stage maps to **one or more** product-focused milestones (a small stage might be a single milestone; a big one several). This issue is the stage's *narrative* ("what does the product look like when this stage is done?"); the milestones are the shippable product outcomes underneath it.
 
 **Example:** "🚲 Bicycle — the product is daily-usable: users can sign up, publish, and read a feed."
 
@@ -155,17 +155,18 @@ For projects with a staged roadmap (Henrik Kniberg's Earliest Testable / Usable 
 
 | Roadmap concept | GitHub PM concept | Granularity |
 |---|---|---|
-| **Tier** (ETP / EUP / ELP) | (none — too coarse) | Multi-month grouping |
-| **Stage** (Bus Ticket / Skateboard / Car / etc.) | **Milestone** | A meaningful deliverable; weeks to a couple of months |
-| **Release** (2-6 weeks of work) | **Epic** | A coherent outcome with a user story |
-| **Lane bullet** (Agent / Backend / UI / ...) | **Slice** | One PR's worth of work |
+| **Tier** (ET / EU / EL) | (none — too coarse) | Multi-month grouping |
+| **Stage** (Bus Ticket / Skateboard / Car / etc.) | *framing only* — a section in `docs/roadmap.md` | A sequencing bucket; maps to 1+ milestones |
+| **Product outcome** within a stage | **Milestone** | A meaningful, shippable capability |
+| **Release cluster** | **Epic** | A coherent outcome with a user story |
+| **Vertical slice** | **Slice** | One PR's worth of work |
 
-Tiers are too coarse for milestones (they'd group multiple concrete deliverables); releases are too fine (often only 2-6 weeks). **Stage is the sweet spot:** each stage has a clear "done" state, runs roughly weeks-to-months, and is a meaningful thing to ship.
+The stage names (Skateboard, Car) are a **thinking tool for sequencing**, not GitHub objects: they live in `docs/roadmap.md` and never become milestone titles. **Name milestones for the product** ("Accounts and login", "First end-to-end run"), not for the stage. A small stage may be a single milestone; a big stage may be worth several milestones plus their epics. Tiers (ET/EU/EL) are too coarse to track in GitHub at all, they're just the top-level grouping in the roadmap doc.
 
-**Concrete example** (a hypothetical web app at the daily-usable stage):
+**Concrete example** (a hypothetical web app, the stage in `docs/roadmap.md` is "Bicycle: daily-usable", and it yields one product-focused milestone):
 
 ```
-Milestone: 🚲 Bicycle   (the "daily-usable" stage)
+Milestone: "Accounts, posting, and a feed"   (the daily-usable stage)
 ├── Epic:  Users can sign up and log in
 │   ├── Slice: Email + password registration endpoint
 │   ├── Slice: Login form on the frontend
@@ -177,9 +178,11 @@ Milestone: 🚲 Bicycle   (the "daily-usable" stage)
 
 Note the last slice in the first epic ("Database migration for the users table") is internal plumbing — its user-centric why is anchored at the epic level ("users can sign up and log in"). The slice itself reads honestly as what changes, no "As a user, I want a database table..." theater required.
 
-**Useful constraint:** an epic must fit inside a single milestone. The moment you try to assign an epic that spans two milestones, the mismatch surfaces and forces you to split it (or rethink the stage boundaries). The same goes for slices vs. epics: a slice that doesn't fit in one PR probably wants to be its own epic with multiple slices.
+**Useful constraint:** an epic must fit inside a single milestone. The moment you try to assign an epic that spans two milestones, the mismatch surfaces and forces you to split it. Likewise a slice that doesn't fit in one PR probably wants to be its own epic with multiple slices. If a whole stage won't fit one shippable milestone, that's the signal to give it several.
 
-**The `kind:stage` label and Stage template.** The bootstrap script seeds a `kind:stage` label and ships a [Stage issue template](#stage-kindstage), so each stage can be a tracked issue (for narrative purposes — "what does the product look like when this stage is done?"). The stage issue is documentation about the milestone, not a work item itself. Give it `Start date` / `Target date` on the board to drive the Roadmap timeline.
+The [`/forge`](../.claude/skills/forge/SKILL.md) skill automates this mapping as a source-informed interactive dialogue (and can be re-run later to slice the next milestones into detail).
+
+**The `kind:stage` label and Stage template.** The bootstrap script seeds a `kind:stage` label and ships a [Stage issue template](#stage-kindstage), so a stage can be a tracked issue (for narrative purposes — "what does the product look like when this stage is done?"). It's documentation about the stage, not a work item, and it's optional: it earns its keep mainly when a stage spans several milestones and you want one dated bar for the whole stage on the Roadmap view. Give it `Start date` / `Target date` on the board to drive the Roadmap timeline.
 
 ### Wiring vision to GitHub PM
 
