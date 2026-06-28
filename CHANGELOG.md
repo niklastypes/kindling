@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.0](https://github.com/niklastypes/kindling/compare/v0.9.1...v0.10.0) (2026-06-28)
+
+
+### Features
+
+* **forge:** harden the skill with dogfooding findings ([51fbba6](https://github.com/niklastypes/kindling/commit/51fbba6369ab7f196c6577a3aa09b9cd172ce440))
+* harden /forge from end-to-end dogfooding ([416fbfc](https://github.com/niklastypes/kindling/commit/416fbfc877796f1a381e1e70c5809c60217b370e))
+* **pm:** agent orientation chain and dependency-aware issue picking ([8f0d0a8](https://github.com/niklastypes/kindling/commit/8f0d0a89a0a47747817d64563f41cf62450b700f))
+* **pm:** enrich slice template with tasks and blocked-by ([a328c31](https://github.com/niklastypes/kindling/commit/a328c31a71e6be4152fbe6036762f1b5337c0e18))
+
 ## [0.9.1](https://github.com/niklastypes/kindling/compare/v0.9.0...v0.9.1) (2026-06-28)
 
 
