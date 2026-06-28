@@ -3,242 +3,230 @@ name: forge
 description: >-
   Structure a project's notes/ design nucleus (brainstorm, research, roadmap)
   into docs/ (architecture, ADRs, a slim roadmap) and GitHub Project items
-  (milestones, epics, slices, ideas). Use after scaffolding to do the initial
-  structuring, and again later in the project's life to slice the next
-  milestones into detail. Runs as a source-informed interactive dialogue, not
-  a one-shot generator.
+  (milestones, epics, slices, ideas), and leave the project navigable by a cold
+  coding agent. Use after scaffolding for the initial structuring, and again
+  later to slice the next milestones into detail. Runs as a source-informed
+  interactive dialogue, not a one-shot generator.
 ---
 
 # /forge
 
 Turn raw `notes/` into structure: `docs/` for the durable narrative, GitHub
-Project items for the actionable state. As each section is structured, the
-matching `notes/` content is pruned, the goal is that `notes/` shrinks toward
-nothing while `docs/` and the board grow.
+Project items for the actionable state, and an entry path a cold agent can
+follow. As each section is structured, the matching `notes/` content is pruned,
+the goal is that `notes/` shrinks toward nothing while `docs/` and the board grow.
 
 ## Philosophy: decide together, incrementally
 
 **This skill is a conversation, not a batch job.** Do NOT read the notes and
-emit one giant plan for approval, then apply it in a single sweep. Instead, at
-every decision point:
+emit one giant plan for approval, then apply it in a single sweep. At every
+decision point:
 
-1. Ground the question in the **actual notes** (quote the stage, the slice, the
+1. Ground the question in the **actual notes** (quote the stage, slice, or
    decision you're asking about).
 2. Use the **AskUserQuestion tool** to offer concrete options, with your
    recommendation first and the reasoning stated.
-3. **Debate** if the user pushes back. Their answer can change your read of the
-   source. Don't defend a proposal past its usefulness.
+3. **Debate.** The user's answer can change your read of the source, don't
+   defend a proposal past its usefulness.
 4. **Lock it in, then act on that piece immediately** (write the ADR, create the
    milestone, open the issues, prune the migrated notes). Keep `docs/`, the
    board, and `notes/` consistent as you go.
 5. Move to the next decision.
 
-The user wants to shape the structure with you, one source-informed question at
-a time, and watch it take shape as you agree, not review a finished document.
+Bias toward **few, high-signal questions**. Batch related choices into one
+question. When something is obvious from the notes, state it and move on.
 
-Bias toward **few, high-signal questions**. Batch trivially-related choices into
-one question with several options rather than interrogating line by line. When
-something is obvious from the notes, state it and move on, don't ask.
+**Challenge the notes; don't transcribe them.** This is the highest-value thing
+`/forge` does. Roadmap notes routinely over-scope the early stages ("the core
+loop, done well") when the Earliest-Testable milestone should be a **tracer
+bullet**: the thinnest end-to-end thread that proves the idea. And **reality-check
+the notes' assumptions** against what actually exists, the notes may assume infra,
+services, or accounts (an observability backend, a hosted model, a vault) that
+aren't stood up yet. Surface those and defer or adjust.
 
 ## A recurring tool, not a one-time bootstrap
 
 `/forge` runs many times across a project's life:
 
 - **Initial structuring**: a fresh `notes/` nucleus becomes `docs/` + a board
-  where the near-term work is detailed and the later work is coarse.
-- **Deepen** (the common repeat): you've shipped the early milestones; now slice
-  the next milestone (which was left at milestone/epic granularity) into real
-  user stories and tasks. See [Deepening later milestones](#deepening-later-milestones).
+  where near-term work is detailed and later work is coarse.
+- **Deepen** (the common repeat): you've shipped the early milestones; slice the
+  next one (left coarse) into real user stories. See [Deepening](#deepening-later-milestones).
 - **Prune**: migrate whatever's left in `notes/` into `docs/` or issues and trim
   the source.
 
-Always start by reading the current state (existing milestones, issues, ADRs,
-and what remains in `notes/`) and propose which of these the run is about.
+Start each run by reading current state (existing milestones, issues, ADRs, and
+what remains in `notes/`) and proposing which of these the run is about.
 
 ## The model
 
-These four levels (defined in `docs/project-management.md`) are what `/forge`
-produces. Mind the deliberate looseness:
+Defined in `docs/project-management.md`. Mind the deliberate looseness:
 
-- **Stage** — a Kniberg / Earliest-Testable-Usable-Lovable framing bucket (Bus
-  Ticket, Skateboard, Scooter, Bicycle, Car). It's a **thinking tool for
-  sequencing**, and it lives as a section in `docs/roadmap.md`. A stage is **not**
-  automatically a milestone, and milestones are **not** named after it.
-- **Milestone** — a **product-focused outcome**, named for what the product can
-  do ("Accounts and login", "First end-to-end run"), never "Skateboard". One
-  stage may be a single small milestone, or a big stage may be worth several
-  milestones. Decide the cardinality with the user.
-- **Epic** — a release cluster: slices that ship together for one coherent
-  outcome, scoped inside a single milestone.
-- **Slice** — a vertical slice / user story / task: one PR's worth of work that
-  cuts through the layers. Its user-centric "why" is inherited from its epic;
-  don't force "As a user…" onto plumbing slices.
+- **Stage** — a Kniberg / ET-EU-EL framing bucket (Bus Ticket, Skateboard, Car).
+  A **thinking tool for sequencing** that lives in `docs/roadmap.md`. Not a
+  GitHub object, and milestones are not named after it.
+- **Milestone** — a **product-focused outcome** ("Generate an episode from a
+  vault"), never "Skateboard". One stage may be one small milestone or several.
+- **Epic** — an optional grouping: a release cluster of slices, only when a
+  milestone has enough slices (~4+) to warrant it.
+- **Slice** — a **small, reviewable PR's worth** of work. There is no separate
+  "task" issue type; a slice's concrete tasks live as a **checklist inside it**.
 
 ## Prerequisites
 
-- A `notes/` folder with the design nucleus. The conventional shape is
-  `brainstorm.md` (vision, decisions, feature ideas), `research.md` or
-  `research/` (technical deep dives, open questions), and `roadmap.md` (stages
-  with slices). Adapt if the project organizes notes differently.
-- The PM board bootstrapped: `./scripts/bootstrap-pm.sh` has run (labels,
-  project, date fields exist). If not, run it first.
+- A `notes/` folder with the design nucleus (`brainstorm.md`, `research.md` or
+  `research/`, `roadmap.md`). Adapt if organized differently.
+- The PM board bootstrapped (`./scripts/bootstrap-pm.sh` has run). If not, run it.
 - `gh` authenticated with the `project` scope (`gh auth refresh -s project`).
-- Read `docs/project-management.md` for this project's issue types, label
-  system, and the stage→milestone mapping. `/forge` automates that mapping.
+- Read `docs/project-management.md` for the issue types, labels, and mapping.
 
 ## Step 0 — Orient
 
-Read the whole `notes/` folder before asking anything. Then reflect the shape
-back in **2-4 sentences** (not a document): how many stages, roughly how much
-work, where the locked decisions live, where the open questions live. Confirm
-you understood the project before structuring it. If the notes don't fit the
-conventional shape, say what you actually found and propose how to proceed.
+Read the whole `notes/` folder before asking anything. Reflect the shape back in
+**2-4 sentences** (not a document): how many stages, roughly how much work, where
+the locked decisions live, where the open questions live. **Reality-check the
+notes' assumptions** here and flag any that don't hold. Confirm you understood the
+project before structuring it.
 
-Discover the context you'll need: owner/repo (`gh repo view --json owner,name`),
-the project number (`gh project list --owner <owner>`), and existing
-milestones/issues/ADRs (so you never duplicate, see [Idempotency](#idempotency)).
+Discover context: owner/repo (`gh repo view --json owner,name`), project number
+(`gh project list --owner <owner>`), and existing milestones/issues/ADRs (so you
+never duplicate, see [Idempotency](#idempotency)).
 
 ## Step 1 — docs/architecture.md
 
-The "what is this system" narrative, sourced from the vision and the
-architecture-bearing research files. Ask a source-informed question about scope
-and shape before writing ("Should architecture.md lead with the runtime data
-flow, or with the component map?"), draft it, confirm, then **prune the migrated
-material from `notes/`** (the vision/architecture prose now lives in docs/). Keep
-it a living overview, not an exhaustive spec.
+The "what is this system" narrative, sourced from the vision + architecture-bearing
+research. Ask about scope/shape, draft, confirm, then **prune the migrated prose
+from `notes/`**. Keep it a living overview, not an exhaustive spec.
 
 ## Step 2 — ADRs (docs/decisions/)
 
 Locked-in technical decisions become ADRs using `docs/decisions/0000-template.md`.
-A decision log in the notes (a "decisions" section in research, or a "Core
-Decisions" block in `brainstorm.md`) is the prime source. For each decision:
+A decision log in the notes is the prime source. For each decision: quote it, ask
+how to record it (status: Accepted / Proposed / Accepted-but-tentative, and
+whether "switch when…" triggers become Consequences), write it (`0001-…`, one
+decision per ADR), and **prune it from `notes/`**. Don't invent decisions, an open
+question is a Step 6 idea, not an ADR.
 
-- Quote it, and ask via AskUserQuestion how to record it: status (Accepted /
-  Proposed / Accepted-but-tentative), and whether any "switch when…" triggers in
-  the notes become the ADR's Consequences.
-- Number ADRs sequentially (`0001-…`, `0002-…`). One decision per ADR.
-- Don't invent decisions. If something reads as an open question, it's a Step 6
-  idea, not an ADR.
-- Once written, **prune the decision from `notes/`** (it's now an ADR).
+## Step 3 — Milestones (product-focused, tracer-bullet first)
 
-## Step 3 — Milestones (product-focused)
+Walk the roadmap stage by stage. The Kniberg name is framing; ask **what product
+outcome(s) the stage delivers, and whether it's one milestone or several**. Name
+milestones for the product, never the codename.
 
-Walk the roadmap stage by stage. For each stage, the Kniberg name is just framing;
-the question is **what product outcome(s) does this stage deliver, and is it one
-milestone or several?** Ask it that way:
+**Right-size the earliest milestone to a tracer bullet.** If the notes' first
+stage reads as "the core loop done well," that's too big, the Earliest-Testable
+milestone is the thinnest end-to-end thread that proves the idea works. Split off
+the depth (quality, persistence, robustness, scale) into a *later* milestone, and
+record that deferred scope in `docs/roadmap.md`, never in an issue body.
 
-> "The 'Skateboard' stage covers <the core loop the notes describe>. That reads
-> like one milestone to me, named **<product outcome>**. Agree, or split it (e.g.
-> a data-layer milestone and a first-user-flow milestone)?"
-
-Offer product-focused names, never the Kniberg codename, as the milestone title.
 For each confirmed milestone:
+- `gh api repos/{owner}/{repo}/milestones -X POST -f title="<product outcome>" -f description="See docs/roadmap.md#<anchor>."`
+- Optionally one `kind:stage` issue per stage as a dated narrative tracker (bare
+  milestones don't render on the Roadmap view; a dated issue does).
 
-- `gh api repos/{owner}/{repo}/milestones -X POST -f title="<product outcome>"
-  -f description="See docs/roadmap.md#<anchor> for the stage definition."`
-- Optionally create one `kind:stage` issue per stage as a dated narrative tracker
-  (bare milestones don't render on the Roadmap view; a dated issue does). Offer
-  it; it's worth it when a stage spans several milestones and you want one Gantt
-  bar for the whole stage.
+## Step 4 — Epics (only when a milestone is big)
 
-## Step 4 — Epics (cluster larger milestones)
+Introduce a `kind:epic` only when a milestone has ~4+ slices worth grouping.
+Propose a clustering drawn from the slices' structure and ask. For small
+milestones, skip epics, slices hang directly off the milestone.
 
-A `kind:epic` groups slices that ship together. **Only introduce epics when a
-milestone has enough slices to warrant grouping** (roughly 4+). Propose a
-clustering drawn from the slices' own structure and ask:
+## Step 5 — Slices (small PRs, detailed, wired)
 
-> "This milestone has 7 slices. I'd split them into two epics, **<outcome A>**
-> and **<outcome B>**. Agree, or cluster differently?"
+Match depth to horizon: detail the **near** milestone(s) into slices now; leave
+later milestones as coarse `docs/roadmap.md` bullets (they'll churn; `/forge` will
+slice them later when they're near).
 
-Offer the recommended split, an alternative granularity, and "keep this milestone
-flat (no epics)". For small milestones, skip epics, slices hang directly off the
-milestone. Create confirmed epics as `kind:epic` issues, milestone-assigned, and
-link slices to them as sub-issues.
+Each slice must be:
+- **Small.** One reviewable PR. Don't inflate a slice to keep the count down, if
+  it would be a big PR, split it. Confirm the granularity with the user.
+- **Readably titled.** Outcome-oriented ("Read a Grimoire vault into typed notes"),
+  not a terse label ("Vault", "API").
+- **Self-contained.** Body = Description, Acceptance criteria, an **Implementation
+  checklist** (the tasks), and a **Context** line breadcrumbing to `docs/`
+  (`architecture.md`, ADRs) and the relevant `notes/research/` sections until those
+  are migrated. **No "Deferred" section**, deferred work lives in `docs/roadmap.md`.
 
-## Step 5 — Slices (match depth to horizon)
+  ```markdown
+  ## Description
+  <what + why, 1-2 sentences>
 
-Don't slice the whole roadmap into issues on day one. Match issue depth to how
-near the work is, and confirm the boundary with the user:
+  ## Acceptance criteria
+  - [ ] ...
 
-- **Near milestones** (the current + next one or two): create every slice as a
-  `kind:slice` issue, a sub-issue of its epic (or milestone, if it stayed flat),
-  milestone-assigned, added to the board.
-- **Later milestones**: create the milestone (+ epics if the shape is already
-  clear) only. Leave their slices as checklist bullets in `docs/roadmap.md`;
-  they'll churn before they're worked, and `/forge` will slice them later (see
-  [Deepening](#deepening-later-milestones)).
-- Confirm slice lists in one batched question per epic, not one question per
-  slice.
+  ## Implementation
+  - [ ] <task>
 
-## Step 6 — Ideas (open questions + far horizon)
+  _Context: docs/architecture.md; research/<file> §N._
+  ```
 
-Open questions and far-future material (the roadmap's "Beyond", late feature
-ideas) become `kind:idea` issues with a `horizon:*` label. Per cluster, ask
-whether each is an idea (`horizon:now/next/later`), a `kind:spike` (a real
-question worth a time-boxed investigation), or out of scope. Don't import every
-musing, ask which are worth tracking, then prune them from `notes/`.
+- **Wired with dependencies.** Encode slice ordering as **native GitHub issue
+  dependencies** so a coding agent can pick unblocked work:
+  ```
+  gh api repos/{owner}/{repo}/issues/{blocked}/dependencies/blocked_by -F issue_id=<blocker_id>
+  ```
+  (the blocker's numeric `id`, from `gh api repos/{o}/{r}/issues/{n} --jq .id`).
 
-## Step 7 — Wire roadmap ↔ board
+Create slices with the `kind:slice` label, assigned to the milestone, added to the
+board (`gh project item-add <n> --owner <o> --url <issue-url>`), and sub-issues of
+their epic when there is one. A slice's user-centric "why" is inherited from its
+milestone/epic, don't force "As a user…" onto plumbing.
 
-Once items exist, close the loop both ways (see project-management.md → "Wiring
-vision to GitHub PM"):
+## Step 6 — Ideas (selective)
 
-- Write/refresh the slim `docs/roadmap.md` (~30-50 lines): the stage glossary
-  (the Kniberg framing stays here, as the sequencing story), and under each stage
-  a line naming its milestone(s) and listing the open epics, e.g.
-  `> Milestone [Accounts and login](../../milestones/2); epics: #14, #15.`
+Open questions and far-future material become `kind:idea` (with `horizon:*`) or
+`kind:spike` issues, **but be selective**. Don't import every musing: far-future
+*vision* stays coarse in `docs/roadmap.md`; only file ideas/spikes that warrant
+active triage now. Tuning details that belong to a future milestone's slices stay
+in the notes until that milestone is worked. Prune what you do file.
+
+## Step 7 — Wire roadmap ↔ board, and the agent's entry path
+
+Two-way wiring (see project-management.md → "Wiring vision to GitHub PM"):
+- Write/refresh slim `docs/roadmap.md` (~30-50 lines): the stage glossary, and
+  under each stage a line naming its milestone(s) and listing the open epics.
 - Make each milestone's description point back at `docs/roadmap.md#<stage>`.
 
-The narrative (why, what each stage looks like done) lives in `docs/`; the state
-(what's open/in-progress/done) lives in GitHub. The links keep both navigable.
+**Then close the agent context chain.** A cold agent must be able to find work
+without tribal knowledge. Ensure `CLAUDE.md` orients it, README → `docs/architecture.md`
+→ `docs/roadmap.md` (naming the **active milestone**) → the board, and documents
+**how to find the next issue**: list the active milestone's open issues, pick one
+with **no open blockers** (`gh api repos/{o}/{r}/issues/{n}/dependencies/blocked_by`),
+preferring slices that unblock the most downstream work. (Kindling's `CLAUDE.md`
+ships this generically; top it up with the project's current focus.)
 
 ## Deepening later milestones
 
-The common repeat run. A later milestone that was left coarse (milestone, maybe
-epics) is now the near work. Re-run `/forge` to:
-
-1. Read the milestone's epics and whatever roadmap/notes material describes it.
-2. Interactively confirm or refine the epic clustering (Step 4).
-3. Slice each epic into `kind:slice` user stories/tasks (Step 5), as sub-issues.
-4. Move the corresponding checklist bullets out of `docs/roadmap.md` (they're
-   issues now) and prune any remaining `notes/` detail you consumed.
-
-This is how a coarse plan becomes actionable, milestone by milestone, instead of
-all at once up front.
+The common repeat run. A milestone left coarse is now the near work. Re-run to:
+read its epics + roadmap/notes material; confirm/refine the epic clustering;
+slice each epic into small `kind:slice` PRs with dependencies; move the
+corresponding bullets out of `docs/roadmap.md`; and prune the consumed notes.
 
 ## Pruning notes/
 
-`notes/` is a staging area, not a permanent home. After each section is
-structured, remove or trim the source with the user's confirmation:
-
-- Vision / architecture / system explanations → `docs/architecture.md` (or its
-  own `docs/` page for a big subsystem). **Technical detail that explains how the
-  system works belongs in `docs/`, not in issues.**
-- Locked decisions → ADRs.
-- Planned work → issues. Far-future / open questions → `kind:idea` issues.
-
-The end-state is that `notes/` empties out entirely: current understanding lives
-in `docs/`, future work lives on the board. Pruning is destructive, always
-confirm before deleting, and never prune material you haven't actually migrated.
+`notes/` is a staging area, not a permanent home. After a section is structured,
+trim the source with the user's confirmation. The key rule: **issues capture
+*work*, not *knowledge*.** Prune a notes section only once its **knowledge** lives
+in `docs/` (architecture, ADRs, system pages), not merely because you made issues
+from it. Be **horizon-aware**: keep future-stage research depth until those stages
+are worked. Pruning is destructive, always confirm, never prune unmigrated material.
 
 ## Idempotency
 
 `/forge` is re-runnable. Before creating anything, list what exists (milestones,
 issues by `kind:*` label, ADR files) and skip or update rather than duplicate.
-Reuse an existing milestone; when deepening, only add the missing slices.
+When deepening, only add the missing slices.
 
 ## When you're done
 
-Summarize what changed: ADRs written, milestones/epics/slices created (with
-counts and the near/later boundary), ideas filed, the docs↔milestone wiring, and
-what was pruned from `notes/`. Point the user at the board URL and
-`docs/roadmap.md`.
+Summarize: ADRs written, milestones/epics/slices created (with counts and the
+near/later boundary and dependency wiring), ideas filed, the docs↔milestone
+wiring, the agent entry path, and what was pruned. Point the user at the board URL
+and `docs/roadmap.md`.
 
 ## References
 
 - Henrik Kniberg, [Making sense of MVP](https://blog.crisp.se/2016/01/25/henrikkniberg/making-sense-of-mvp)
-  — the Earliest Testable/Usable/Lovable framing and the skateboard→car metaphor.
-- Michael Nygard, [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions),
-  and [adr.github.io](https://adr.github.io/) — the ADR practice.
-- This project's `docs/project-management.md` — the issue types, label system,
-  and stage/milestone mapping `/forge` operates on.
+  — Earliest Testable/Usable/Lovable and the skateboard→car metaphor.
+- Michael Nygard, [Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
+  and [adr.github.io](https://adr.github.io/).
+- This project's `docs/project-management.md`.

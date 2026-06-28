@@ -106,6 +106,22 @@ The key is `Fixes #N` in the PR description. This triggers GitHub's automatic is
 
 ---
 
+## Issue dependencies
+
+Slices within a milestone usually have an order, one builds on another. Encode that as **native GitHub issue dependencies** (the "Blocked by" relationship), not just a prose note, so a coding agent (or you) can pick work without guessing what's ready.
+
+Set a dependency via the API:
+
+```bash
+# make <blocked> blocked by <blocker>
+gh api repos/<owner>/<repo>/issues/<blocked>/dependencies/blocked_by \
+  -F issue_id=$(gh api repos/<owner>/<repo>/issues/<blocker> --jq .id)
+```
+
+**Finding the next issue:** list the active milestone's open issues, then pick one with **no open blockers** (`gh api repos/<owner>/<repo>/issues/<N>/dependencies/blocked_by` returns `[]`). Prefer slices that unblock the most downstream work. The [`/forge`](../.claude/skills/forge/SKILL.md) skill wires these dependencies when it slices a milestone, and `CLAUDE.md` documents the picking rule for agents.
+
+---
+
 ## Idea Capture
 
 Not every thought is ready to become work. The idea capture flow lets you record possibilities and revisit them later.

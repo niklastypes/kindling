@@ -1,20 +1,22 @@
 name: Slice
-description: An atomic vertical slice of work that delivers observable value
+description: A small, reviewable slice of work (one PR's worth)
 labels: ["kind:slice"]
 body:
   - type: markdown
     attributes:
       value: |
-        A slice cuts through all layers (UI, logic, data) and delivers a single piece of observable value.
-        It should be small enough to complete in one PR.
+        A slice is one small, reviewable PR's worth of work. Keep it small; if it
+        would be a large PR, split it. Its implementation tasks live in the
+        checklist below, there is no separate "task" issue type. Deferred or
+        follow-up work belongs in `docs/roadmap.md`, not here.
 
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: What does this slice deliver? What will be different when it's done?
+      description: What does this slice deliver? What changes when it's done?
       placeholder: |
-        Describe the user-visible change this slice makes.
+        The user- or system-visible change this slice makes.
     validations:
       required: true
 
@@ -28,6 +30,24 @@ body:
         - [ ] Criterion 2
     validations:
       required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation
+      description: The concrete tasks to build this slice (a checklist). Add a Context line breadcrumbing to docs/ (and notes/ until migrated).
+      placeholder: |
+        - [ ] Task 1
+        - [ ] Task 2
+
+        _Context: docs/architecture.md._
+
+  - type: input
+    id: blocked-by
+    attributes:
+      label: Blocked by
+      description: Issues that must finish first. Also set these as native issue dependencies (Blocked by) so agents can order work.
+      placeholder: "#N, #M"
 
   - type: input
     id: parent-epic
