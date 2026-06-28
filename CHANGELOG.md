@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0](https://github.com/niklastypes/kindling/compare/v0.8.0...v0.9.0) (2026-06-28)
+
+
+### Features
+
+* /forge notes-structuring skill ([2d4ff6b](https://github.com/niklastypes/kindling/commit/2d4ff6b9f5be35764e088e1d0d5f2e2770222e5a))
+* add /forge notes-structuring skill ([00398a1](https://github.com/niklastypes/kindling/commit/00398a1e0e850366f6f8095dce1a60eec042abe7))
+
 ## [0.8.0](https://github.com/niklastypes/kindling/compare/v0.7.2...v0.8.0) (2026-06-26)
 
 
