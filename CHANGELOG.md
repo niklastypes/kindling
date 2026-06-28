@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.1](https://github.com/niklastypes/kindling/compare/v0.9.0...v0.9.1) (2026-06-28)
+
+
+### Bug Fixes
+
+* pin setup-uv to v8.2.0 (no moving v8 tag exists) ([062dd8e](https://github.com/niklastypes/kindling/commit/062dd8e0b490dacfd9d3f5a521669ae898a3fdc4))
+* pin setup-uv to v8.2.0 (no moving v8 tag) ([f1cd123](https://github.com/niklastypes/kindling/commit/f1cd1233f3be32713df0275b5900d73351c9c597))
+
 ## [0.9.0](https://github.com/niklastypes/kindling/compare/v0.8.0...v0.9.0) (2026-06-28)
 
 
