@@ -79,6 +79,10 @@ Validators in `copier.yml` are Jinja expressions. They return an error message s
 
 Not generated deliberately: logging config, Docker, FastAPI/CLI scaffolding, test fixtures. The `docs/` guides explain how to add these when needed.
 
+**Generated when `enable_github_pm=true`:** `.github/ISSUE_TEMPLATE/{epic,slice,spike,idea,bug,stage}.yml`, `.github/pull_request_template.md`, `scripts/bootstrap-pm.sh`, `docs/project-management.md`, and `.claude/skills/forge/SKILL.md`, the `/forge` skill that structures `notes/` into `docs/` (architecture, ADRs, slim roadmap) and GitHub Project items (milestones, epics, slices, ideas). The generated README and CLAUDE.md both point users/agents at it.
+
+**Generated when `full_stack=true`:** `api/` (FastAPI backend), `ui/` (Vue 3 frontend), `nx.json`, `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `docs/full-stack.md`; root-level Python files move into `api/`.
+
 ## Hook Stages
 
 | Stage | Hooks | Notes |
@@ -96,6 +100,8 @@ Not generated deliberately: logging config, Docker, FastAPI/CLI scaffolding, tes
 | `author_name` | str | (required) | For pyproject.toml and LICENSE |
 | `github_username` | str | (required) | GitHub username or org, for project URLs |
 | `python_version` | str | "3.13" | Choices: 3.12, 3.13 |
+| `full_stack` | bool | false | Scaffold a Vue 3 + FastAPI + Nx monorepo. Python moves into `api/`, adds `ui/`. |
+| `enable_github_pm` | bool | false | Add the Project board bootstrap, issue/PR templates, labels, and the `/forge` skill. |
 | `package_name` | str | (computed) | `project_name` with hyphens replaced by underscores. Not shown to user. |
 
 `package_name` is used everywhere a Python-valid identifier is needed (src directory, imports, pyproject.toml). `project_name` is used for human-readable names.

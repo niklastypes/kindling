@@ -17,7 +17,7 @@ A copier template for bootstrapping Python projects with clean defaults and cons
 - Auto `git init`, conventional first commit, and `v0.1.0` tag on generation
 - src-layout, MIT license, AGENTS.md with project standards
 - **Optional full-stack scaffold** (Vue 3 + FastAPI + Nx monorepo) with `--data full_stack=true`
-- **Optional GitHub PM scaffold** (Project board, issue templates, labels, bootstrap script) with `--data enable_github_pm=true`
+- **Optional GitHub PM scaffold** (Project board, issue templates, labels, bootstrap script, and the [`/forge`](project/.claude/skills/forge/SKILL.md) skill that structures `notes/` into docs + a board) with `--data enable_github_pm=true`
 - `docs/` with architecture skeleton, ADR template, [the ubiquitous language convention](project/docs/ubiquitous-language.md), and guides for [going to production](project/docs/productionalize.md)
 
 ## Usage
@@ -37,7 +37,7 @@ cd my-project
 copier update --trust
 ```
 
-You'll be asked for: project name, description, author, GitHub username, Python version.
+You'll be asked for: project name, description, author, GitHub username, Python version, and whether to add the full-stack and GitHub PM scaffolds.
 
 ### After Generation
 
