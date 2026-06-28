@@ -11,6 +11,17 @@ import pytest
 from conftest import DEFAULT_DATA, TEMPLATE_ROOT
 
 
+def test_no_empty_excluded_dirs(generated: Path, generated_full_stack: Path) -> None:
+    """_exclude leaves no empty parent dirs behind (pruned by a post-gen task)."""
+    # backend-only, no PM: no api/ or ui/ leftovers, no .claude/skills/forge
+    assert not (generated / "api").exists()
+    assert not (generated / "ui").exists()
+    assert not (generated / ".claude" / "skills" / "forge").exists()
+    # full-stack: no root src/ or tests/ leftovers
+    assert not (generated_full_stack / "src").exists()
+    assert not (generated_full_stack / "tests").exists()
+
+
 def test_key_files_exist(generated: Path) -> None:
     assert (generated / "pyproject.toml").exists()
     assert (generated / ".python-version").exists()
