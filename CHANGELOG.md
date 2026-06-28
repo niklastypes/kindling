@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.1](https://github.com/niklastypes/kindling/compare/v0.10.0...v0.10.1) (2026-06-28)
+
+
+### Bug Fixes
+
+* prune empty directories left behind by _exclude ([0beac72](https://github.com/niklastypes/kindling/commit/0beac7290ad299c03ea77a680e121fc08243887d))
+* prune empty dirs left by _exclude ([fd2f23e](https://github.com/niklastypes/kindling/commit/fd2f23e641acd18a1d0aa8dce0f548a591f32157))
+
+
+### Documentation
+
+* surface PM scaffold + /forge in Kindling's own docs ([7533473](https://github.com/niklastypes/kindling/commit/7533473b448f3625357ebc771b6fb4791296622b))
+* surface the PM scaffold, full_stack, and /forge in Kindling's docs ([07b7a65](https://github.com/niklastypes/kindling/commit/07b7a6590727214d70d6fb181e736006c864ac9d))
+
 ## [0.10.0](https://github.com/niklastypes/kindling/compare/v0.9.1...v0.10.0) (2026-06-28)
 
 
