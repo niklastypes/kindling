@@ -93,6 +93,10 @@ enable_github_pm:
 # --- Tasks ---
 
 _tasks:
+  # Prune empty directories that _exclude leaves behind (e.g. api/ + ui/ in
+  # backend-only mode, src/ + tests/ in full-stack, .claude/skills/forge/
+  # without PM). Excludes the VCS/venv/node trees so it's safe on update too.
+  - "find . -type d -empty -not -path './.git/*' -not -path './.venv/*' -not -path '*/node_modules/*' -not -path '*/.nx/*' -delete 2>/dev/null || true"
   - >-
     [ ! -d .git ] &&
     git init &&
