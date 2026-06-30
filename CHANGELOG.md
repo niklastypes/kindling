@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0](https://github.com/niklastypes/kindling/compare/v0.10.1...v0.11.0) (2026-06-30)
+
+
+### Features
+
+* add optional hexagonal scaffold for full-stack projects ([671abad](https://github.com/niklastypes/kindling/commit/671abad2d9c2b7cb91d25d56f7955612f0c7c573))
+* add optional hexagonal scaffold for full-stack projects ([577f5ae](https://github.com/niklastypes/kindling/commit/577f5ae13d6c5a3deefa5856ea5c151d57fdf18d))
+
 ## [0.10.1](https://github.com/niklastypes/kindling/compare/v0.10.0...v0.10.1) (2026-06-28)
 
 
