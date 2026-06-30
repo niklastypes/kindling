@@ -19,6 +19,12 @@ _exclude:
   - "{% if full_stack %}/pyproject.toml{% endif %}"
   - "{% if full_stack %}/.python-version{% endif %}"
   - "{% if full_stack %}/.env.example{% endif %}"
+  # Full-stack backend layout: hexagonal (default) vs flat. Only one is generated.
+  - "{% if not hexagonal %}/api/src/{{package_name}}/domain/{% endif %}"
+  - "{% if not hexagonal %}/api/src/{{package_name}}/ports/{% endif %}"
+  - "{% if not hexagonal %}/api/src/{{package_name}}/adapters/{% endif %}"
+  - "{% if not hexagonal %}/api/src/{{package_name}}/application/{% endif %}"
+  - "{% if hexagonal %}/api/src/{{package_name}}/api/{% endif %}"
   # Docs: only generate feature-specific guides when opted in
   - "{% if not full_stack %}/docs/full-stack.md{% endif %}"
   # GitHub PM: exclude PM files when not enabled
@@ -84,6 +90,12 @@ full_stack:
   type: bool
   help: "Scaffold a full-stack app (Vue 3 + FastAPI + Nx monorepo)?"
   default: false
+
+hexagonal:
+  type: bool
+  help: "Use hexagonal architecture (ports & adapters) for the backend, with import-linter-enforced boundaries?"
+  when: "{{ full_stack }}"
+  default: "{{ full_stack }}"
 
 enable_github_pm:
   type: bool

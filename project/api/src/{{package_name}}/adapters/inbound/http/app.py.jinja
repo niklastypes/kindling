@@ -1,0 +1,27 @@
+from collections.abc import Sequence
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from {{package_name}}.adapters.inbound.http.routes.health import router as health_router
+
+
+def build_http_app(*, cors_allowed_origins: Sequence[str]) -> FastAPI:
+    """Assemble the FastAPI app from plain values.
+
+    Takes primitives (not config or adapter objects) so this layer stays free of
+    application/outbound dependencies. Wiring is the composition root's job.
+    """
+    app = FastAPI()
+
+    if cors_allowed_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(cors_allowed_origins),
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
+    app.include_router(health_router, prefix="/api")
+    return app

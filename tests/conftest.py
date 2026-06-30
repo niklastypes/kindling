@@ -25,6 +25,12 @@ FULL_STACK_DATA = {
     "full_stack": True,
 }
 
+# Full-stack defaults to hexagonal; this opts out for the flat backend layout.
+FLAT_FULL_STACK_DATA = {
+    **FULL_STACK_DATA,
+    "hexagonal": False,
+}
+
 PM_DATA = {
     **DEFAULT_DATA,
     "enable_github_pm": True,
@@ -68,10 +74,26 @@ def generated(tmp_path_factory: pytest.TempPathFactory) -> Path:
 @pytest.fixture(scope="session")
 def generated_full_stack(tmp_path_factory: pytest.TempPathFactory) -> Path:
     dest = tmp_path_factory.mktemp("generated_full_stack") / "test-project"
+    # No `hexagonal` key in the data + defaults=True exercises the real default
+    # (hexagonal is on for full-stack projects).
     copier.run_copy(
         str(TEMPLATE_ROOT),
         dest,
         data=FULL_STACK_DATA,
+        defaults=True,
+        unsafe=True,
+        vcs_ref="HEAD",
+    )
+    return dest
+
+
+@pytest.fixture(scope="session")
+def generated_flat_full_stack(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    dest = tmp_path_factory.mktemp("generated_flat_full_stack") / "test-project"
+    copier.run_copy(
+        str(TEMPLATE_ROOT),
+        dest,
+        data=FLAT_FULL_STACK_DATA,
         unsafe=True,
         vcs_ref="HEAD",
     )

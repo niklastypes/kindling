@@ -1,0 +1,11 @@
+from fastapi import APIRouter
+
+from {{package_name}}.domain.health import check_health
+
+
+router = APIRouter()
+
+
+@router.get("/health")
+async def health() -> dict[str, str]:
+    return {"status": check_health().status}

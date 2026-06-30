@@ -34,7 +34,15 @@ repos:
         pass_filenames: false
         types: [python]
         stages: [pre-push]
-
+{% if hexagonal %}
+      - id: import-linter
+        name: import-linter (hexagonal boundaries)
+        entry: uv --directory api run lint-imports
+        language: system
+        pass_filenames: false
+        types: [python]
+        stages: [pre-push]
+{% endif %}
   - repo: https://gitlab.com/vojko.pribudic.foss/pre-commit-update
     rev: v0.9.0
     hooks:

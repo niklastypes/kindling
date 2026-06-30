@@ -51,7 +51,10 @@ jobs:
 
       - name: Type check
         run: uv run ty check src/ tests/
-
+{% if hexagonal %}
+      - name: Import boundaries
+        run: uv run lint-imports
+{% endif %}
   test:
     runs-on: ubuntu-latest
 {% if full_stack %}

@@ -59,7 +59,8 @@ Once the board exists, run the **`/forge`** skill (in `.claude/skills/forge/`) t
 | API lint | `cd api && uv run ruff check src/ tests/` |
 | API format | `cd api && uv run ruff format src/ tests/` |
 | API type check | `cd api && uv run ty check src/ tests/` |
-| UI type check | `cd ui && npx vue-tsc --noEmit` |
+{% if hexagonal %}| API import boundaries | `cd api && uv run lint-imports` |
+{% endif %}| UI type check | `cd ui && npx vue-tsc --noEmit` |
 | UI build | `cd ui && npx vite build` |
 {% else %}
 | Task | Command |

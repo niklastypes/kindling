@@ -18,7 +18,44 @@ Browser  -->  Vite (:4200)  -->  /api/*  -->  FastAPI (:8080)
 - **`nx.json`**: Nx orchestrates tasks across both projects.
 
 See [`full-stack.md`](full-stack.md) for frontend conventions and backend patterns.
+{% if hexagonal %}
+### Backend layering (hexagonal)
 
+The `api/` backend is structured as **hexagonal architecture** (ports & adapters), with boundaries enforced by [import-linter](https://import-linter.readthedocs.io/) (`uv run lint-imports`, run in pre-commit and CI).
+
+| Layer | Package | Responsibility |
+|---|---|---|
+| Domain | `{{package_name}}.domain` | Pure business logic and models. No HTTP, no I/O. May depend only on port protocols. |
+| Ports | `{{package_name}}.ports` | `Protocol` interfaces, split `inbound` (driving) and `outbound` (driven). |
+| Adapters | `{{package_name}}.adapters` | Concrete implementations: `inbound` (HTTP routes) and `outbound` (DB / clients / etc.). |
+| Application | `{{package_name}}.application` | Config and the composition root (`application/app.py:create_app`) — the single place adapters are chosen and wired. |
+
+**Dependency direction:** `adapters → application → ports → domain`. A layer may import those below it, never above.
+
+```mermaid
+flowchart TD
+    A["adapters<br/>inbound.http"]
+    APP["application<br/>composition root · config"]
+    P["ports<br/>inbound · outbound"]
+    D["domain<br/>check_health · HealthReport"]
+
+    A --> APP
+    APP --> P
+    P --> D
+
+    APP -. "exception: composition root wires adapters" .-> A
+```
+
+`{{package_name}}.app:create_app` (the uvicorn `--factory` entrypoint) is a thin shim that re-exports the composition root.
+
+**Adding your first outbound port.** The scaffold ships layers-only (no example port), so the import-linter config starts minimal. When you add an outbound integration:
+
+1. Define the `Protocol` in `ports/outbound/<name>.py`; have the domain import it as needed.
+2. Implement it in `adapters/outbound/<name>/` — ship a real adapter **and** an in-memory fake (the fake doubles as a test double and a dependency-free local mode).
+3. Wire the choice in the composition root (`application/app.py`).
+4. Extend the import-linter config in `pyproject.toml`: if the domain imports the port, add `"{{package_name}}.domain.** -> {{package_name}}.ports.**"` to `ignore_imports`; once you have two or more outbound adapter families, add an `independence` contract over them.
+
+{% endif %}
 {% else %}
 ## System Architecture
 

@@ -25,6 +25,9 @@ dev = [
     "pre-commit>=4.0.0",
     "anyio>=4.0.0",
     "httpx>=0.28.0",
+{%- if hexagonal %}
+    "import-linter>=2.0",
+{%- endif %}
 ]
 
 [build-system]
@@ -72,3 +75,33 @@ known-first-party = ["{{package_name}}"]
 [tool.ruff.format]
 docstring-code-format = true
 docstring-code-line-length = 80
+{%- if hexagonal %}
+
+# Hexagonal boundaries, enforced by import-linter (`uv run lint-imports`).
+# Layers run high -> low; a layer may import those below it, never above.
+# See docs/architecture.md for how to grow this as you add outbound ports.
+[tool.importlinter]
+root_package = "{{package_name}}"
+
+[[tool.importlinter.contracts]]
+name = "Hexagonal layers"
+type = "layers"
+layers = [
+    "{{package_name}}.adapters",
+    "{{package_name}}.application",
+    "{{package_name}}.ports",
+    "{{package_name}}.domain",
+]
+ignore_imports = [
+    # The composition root is the one place adapters are wired together.
+    "{{package_name}}.application.app -> {{package_name}}.adapters.**",
+]
+
+[[tool.importlinter.contracts]]
+name = "Inbound and outbound adapters are independent"
+type = "independence"
+modules = [
+    "{{package_name}}.adapters.inbound",
+    "{{package_name}}.adapters.outbound",
+]
+{%- endif %}

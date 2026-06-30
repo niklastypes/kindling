@@ -83,6 +83,8 @@ Not generated deliberately: logging config, Docker, FastAPI/CLI scaffolding, tes
 
 **Generated when `full_stack=true`:** `api/` (FastAPI backend), `ui/` (Vue 3 frontend), `nx.json`, `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `docs/full-stack.md`; root-level Python files move into `api/`.
 
+**Generated when `hexagonal=true`** (full-stack only, default-on): the backend uses a ports & adapters layout (`domain/`, `ports/`, `adapters/`, `application/` + an `app.py` composition-root shim) instead of the flat `api/`-router layout, with import-linter contracts in `pyproject.toml` and a `lint-imports` hook in pre-commit + CI. Opt out (`hexagonal=false`) for the flat backend. The two layouts are mutually exclusive, selected by `_exclude` rules.
+
 ## Hook Stages
 
 | Stage | Hooks | Notes |
@@ -101,6 +103,7 @@ Not generated deliberately: logging config, Docker, FastAPI/CLI scaffolding, tes
 | `github_username` | str | (required) | GitHub username or org, for project URLs |
 | `python_version` | str | "3.13" | Choices: 3.12, 3.13 |
 | `full_stack` | bool | false | Scaffold a Vue 3 + FastAPI + Nx monorepo. Python moves into `api/`, adds `ui/`. |
+| `hexagonal` | bool | `{{ full_stack }}` | Asked only for full-stack. Hexagonal (ports & adapters) backend with import-linter-enforced boundaries; opt out for the flat layout. |
 | `enable_github_pm` | bool | false | Add the Project board bootstrap, issue/PR templates, labels, and the `/forge` skill. |
 | `package_name` | str | (computed) | `project_name` with hyphens replaced by underscores. Not shown to user. |
 
