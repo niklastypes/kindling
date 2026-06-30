@@ -61,6 +61,23 @@
 ## Project Layout
 
 {% if full_stack %}
+{% if hexagonal %}
+```
+api/
+  src/{{package_name}}/      # FastAPI backend (hexagonal: ports & adapters)
+    domain/                  # pure business logic + models
+    ports/                   # Protocol interfaces (inbound, outbound)
+    adapters/                # inbound (http) + outbound implementations
+    application/             # composition root + config
+    app.py                   # entrypoint shim re-exporting create_app
+  tests/
+ui/
+  src/                       # Vue 3 frontend
+docs/                        # Architecture, decisions, and guides
+```
+
+Boundaries (`adapters → application → ports → domain`) are enforced by import-linter (`uv --directory api run lint-imports`); see [docs/architecture.md](docs/architecture.md) for the layer model and how to add an outbound port.
+{% else %}
 ```
 api/
   src/{{package_name}}/     # FastAPI backend
@@ -69,6 +86,7 @@ ui/
   src/                       # Vue 3 frontend
 docs/                        # Architecture, decisions, and guides
 ```
+{% endif %}
 {% else %}
 ```
 src/{{package_name}}/

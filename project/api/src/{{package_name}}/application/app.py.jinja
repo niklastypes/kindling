@@ -1,0 +1,15 @@
+from fastapi import FastAPI
+
+from {{package_name}}.adapters.inbound.http.app import build_http_app
+from {{package_name}}.application.config import Settings
+
+
+def create_app() -> FastAPI:
+    """Composition root: the single place adapters are chosen and wired.
+
+    Add outbound adapters here (e.g. a database client or a fake), and pass them
+    into ``build_http_app`` / inbound dependencies. Swapping an implementation
+    happens here and nowhere else.
+    """
+    settings = Settings.from_env()
+    return build_http_app(cors_allowed_origins=settings.cors_allowed_origins)
