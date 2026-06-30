@@ -17,9 +17,8 @@ def test_full_stack_key_files_exist(generated_full_stack: Path) -> None:
     ).exists()
     assert (generated_full_stack / "api" / "src" / "test_project" / "py.typed").exists()
     assert (generated_full_stack / "api" / "src" / "test_project" / "app.py").exists()
-    assert (
-        generated_full_stack / "api" / "src" / "test_project" / "api" / "health.py"
-    ).exists()
+    # Backend defaults to the hexagonal layout; layer-tree and flat-opt-out
+    # assertions live in test_hexagonal.py.
     assert (generated_full_stack / "api" / "tests" / "__init__.py").exists()
     assert (generated_full_stack / "api" / "tests" / "test_health.py").exists()
     # Frontend
